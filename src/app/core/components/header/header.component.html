@@ -1,0 +1,35 @@
+<header class="fever-header" [class.detail-view]="isDetailPage">
+    <div class="header-left">
+        <div class="logo">Fever Pets</div>
+    </div>
+
+    <div class="header-center">
+        @if (showFilters) {
+        <div class="filters">
+            <div class="search-container">
+                <input type="text" placeholder="Search by name" class="search-input">
+            </div>
+            <div class="divider"></div>
+            <button class="filter-btn active">
+                <img src="assets/dog_icon.png" alt="Dog" class="icon-img">
+            </button>
+            <button class="filter-btn">
+                <span>🐱</span>
+            </button>
+            <div class="divider"></div>
+            <div class="dropdown">
+                <span>Weight</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="dropdown">
+                <span>Height</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="dropdown">
+                <span>Length</span>
+                <span class="arrow">▼</span>
+            </div>
+        </div>
+        }
+    </div>
+</header>
