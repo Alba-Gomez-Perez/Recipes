@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { FilterService, PetFilters } from '../../services/filter.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, FormsModule],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })
@@ -14,7 +16,18 @@ export class HeaderComponent implements OnInit {
     showFilters = true;
     isDetailPage = false;
 
-    constructor(private router: Router) { }
+    filters: PetFilters = {
+        name: '',
+        kind: null,
+        weight: 'all',
+        height: 'all',
+        length: 'all'
+    };
+
+    constructor(
+        private router: Router,
+        private filterService: FilterService
+    ) { }
 
     ngOnInit() {
         this.router.events.pipe(
@@ -23,5 +36,24 @@ export class HeaderComponent implements OnInit {
             this.isDetailPage = event.url.includes('/pets/');
             this.showFilters = !this.isDetailPage;
         });
+
+        // Initialize local filters from service
+        this.filters = this.filterService.currentFilters;
+    }
+
+    updateName(event: any) {
+        const name = event.target.value;
+        this.filterService.updateFilters({ name });
+    }
+
+    toggleKind(kind: 'dog' | 'cat') {
+        const newKind = this.filters.kind === kind ? null : kind;
+        this.filters.kind = newKind;
+        this.filterService.updateFilters({ kind: newKind });
+    }
+
+    updateFilter(type: 'weight' | 'height' | 'length', event: any) {
+        const value = event.target.value;
+        this.filterService.updateFilters({ [type]: value });
     }
 }

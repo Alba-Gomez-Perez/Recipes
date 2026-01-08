@@ -150,16 +150,29 @@
                 font-size: 0.9rem;
                 font-weight: 500;
                 color: #333;
-                padding: 0.5rem;
+                padding: 0; // Remove padding as select has it
                 border-radius: 4px;
 
                 &:hover {
                     background-color: #f5f5f5;
                 }
 
-                .arrow {
-                    font-size: 0.6rem;
-                    color: #666;
+                select {
+                    border: none;
+                    background: transparent;
+                    font-family: 'Inter', sans-serif;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    color: #333;
+                    cursor: pointer;
+                    outline: none;
+                    padding: 0.5rem;
+                    -webkit-appearance: none; // Remove default arrow
+                    -moz-appearance: none;
+                    appearance: none;
+
+                    // Add custom arrow if needed, or rely on browser default for simplicity first
+                    // For now, let's use a simple background arrow or just text
                 }
             }
 
