@@ -1,0 +1,9 @@
+<h1>Pet list</h1>
+
+@if (pets.length > 0) {
+    <ul> @for (pet of pets; track pet.id) {
+        <li>{{ pet.name }} ({{ pet.kind }})</li>
+    }
+    </ul>
+}
+
