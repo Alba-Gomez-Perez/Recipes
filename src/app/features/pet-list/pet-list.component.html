@@ -1,9 +1,32 @@
-<h1>Pet list</h1>
+<div class="pet-list-container">
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>Jade</h1>
+            <p>Say hello to the pet of the day</p>
+        </div>
+    </div>
 
-@if (pets.length > 0) {
-    <ul> @for (pet of pets; track pet.id) {
-        <li>{{ pet.name }} ({{ pet.kind }})</li>
-    }
-    </ul>
-}
+    <div class="container">
 
+        @if (pets.length > 0) {
+        <div class="pet-grid">
+            @for (pet of pets; track pet.id) {
+            <div class="pet-card" (click)="goToDetail(pet.id)">
+                <div class="card-image">
+                    <img [src]="pet.photo_url" [alt]="pet.name">
+                </div>
+                <div class="card-content">
+                    <h3>{{ pet.name }}</h3>
+                    <div class="card-info">
+                        <p><span class="icon">🐾</span> {{ pet.kind | titlecase }}</p>
+                        <p><span class="icon">⚖️</span> {{ pet.weight }} kg</p>
+                        <p><span class="icon">📏</span> {{ pet.height }} cm</p>
+                        <p><span class="icon">↔️</span> {{ pet.length }} cm</p>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>
