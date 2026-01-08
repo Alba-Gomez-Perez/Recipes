@@ -159,8 +159,30 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-size: 1.5rem;
-    color: #666;
+    width: 100%;
+
+    .loading-img {
+        max-width: 200px;
+        height: auto;
+        animation: pulse 2s infinite ease-in-out;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+
+    100% {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
 }
 
 @media (max-width: 768px) {
