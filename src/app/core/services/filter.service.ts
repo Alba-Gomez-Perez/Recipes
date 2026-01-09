@@ -9,6 +9,7 @@ export interface PetFilters {
     length: string; // 'short' | 'average' | 'long' | 'all'
     sortBy: string;
     sortOrder: 'asc' | 'desc';
+    page: number;
 }
 
 @Injectable({
@@ -23,7 +24,8 @@ export class FilterService {
         height: 'all',
         length: 'all',
         sortBy: 'name',
-        sortOrder: 'asc'
+        sortOrder: 'asc',
+        page: 1
     };
 
     private _filters = new BehaviorSubject<PetFilters>(this.loadFilters());
