@@ -1,0 +1,53 @@
+<div class="filters">
+    <div class="search-container">
+        <input type="text" placeholder="Search by name" class="search-input" (input)="updateName($event)"
+            [value]="filters.name">
+    </div>
+    <div class="divider"></div>
+    <button class="filter-btn" [class.active]="filters.kind === 'dog'" (click)="toggleKind('dog')">
+        <span>🐶</span>
+    </button>
+    <button class="filter-btn" [class.active]="filters.kind === 'cat'" (click)="toggleKind('cat')">
+        <span>🐱</span>
+    </button>
+    <div class="divider"></div>
+    <div class="dropdown">
+        <select (change)="updateFilter('weight', $event)" [value]="filters.weight">
+            <option value="all">Weight: All</option>
+            <option value="small">Small (< 5kg)</option>
+            <option value="medium">Medium (5-15kg)</option>
+            <option value="large">Large (> 15kg)</option>
+        </select>
+    </div>
+    <div class="dropdown">
+        <select (change)="updateFilter('height', $event)" [value]="filters.height">
+            <option value="all">Height: All</option>
+            <option value="short">Short (< 30cm)</option>
+            <option value="average">Average (30-60cm)</option>
+            <option value="tall">Tall (> 60cm)</option>
+        </select>
+    </div>
+    <div class="dropdown">
+        <select (change)="updateFilter('length', $event)" [value]="filters.length">
+            <option value="all">Length: All</option>
+            <option value="short">Short (< 40cm)</option>
+            <option value="average">Average (40-80cm)</option>
+            <option value="long">Long (> 80cm)</option>
+        </select>
+    </div>
+    <div class="divider"></div>
+    <div class="dropdown sort-dropdown">
+        <span class="sort-label">Sort by:</span>
+        <select (change)="updateFilter('sortBy', $event)" [value]="filters.sortBy">
+            <option value="name">Name</option>
+            <option value="weight">Weight</option>
+            <option value="height">Height</option>
+            <option value="length">Length</option>
+            <option value="kind">Kind</option>
+        </select>
+    </div>
+    <button class="order-toggle" (click)="toggleOrder()"
+        [title]="filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'">
+        <span class="arrow" [class.desc]="filters.sortOrder === 'desc'">↑</span>
+    </button>
+</div>
