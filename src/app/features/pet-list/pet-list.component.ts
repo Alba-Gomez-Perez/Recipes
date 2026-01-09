@@ -37,7 +37,6 @@ export class PetListComponent implements OnInit {
         this.filterService.filters$.subscribe(filters => {
             this.filterPets(filters);
         });
-        this.isLoading = false;
     }
 
     filterPets(filters: PetFilters) {
@@ -54,9 +53,9 @@ export class PetListComponent implements OnInit {
 
             // Filter by Weight
             if (filters.weight !== 'all') {
-                if (filters.weight === 'small' && pet.weight >= 5) return false;
-                if (filters.weight === 'medium' && (pet.weight < 5 || pet.weight > 15)) return false;
-                if (filters.weight === 'large' && pet.weight <= 15) return false;
+                if (filters.weight === 'small' && pet.weight >= 5000) return false;
+                if (filters.weight === 'medium' && (pet.weight < 5000 || pet.weight > 15000)) return false;
+                if (filters.weight === 'large' && pet.weight <= 15000) return false;
             }
 
             // Filter by Height
@@ -75,6 +74,7 @@ export class PetListComponent implements OnInit {
 
             return true;
         });
+        this.isLoading = false;
     }
 
     goToDetail(id: number) {
