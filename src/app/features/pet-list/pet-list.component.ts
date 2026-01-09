@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
 import { FilterService, PetFilters } from '../../core/services/filter.service';
-import { combineLatest } from 'rxjs';
 import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 
 @Component({
@@ -17,12 +16,13 @@ import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 export class PetListComponent implements OnInit {
     allPets: Pet[] = [];
     pets: Pet[] = [];
+    petOfTheDay: Pet | null = null;
     defaultPetImage: string = '/assets/default.png';
     isLoading: boolean = true;
 
     constructor(
         private router: Router,
-        private filterService: FilterService
+        private filterService: FilterService,
     ) { }
 
     ngOnInit() {
@@ -33,10 +33,28 @@ export class PetListComponent implements OnInit {
         this.isLoading = true;
         this.allPets = await petsService.getAllPets();
 
+        // Select pet of the day
+        this.petOfTheDay = this.getPetOfTheDay();
+
         // Subscribe to filter changes
         this.filterService.filters$.subscribe(filters => {
             this.filterPets(filters);
         });
+    }
+
+    getPetOfTheDay(): Pet | null {
+        if (this.allPets.length === 0) return null;
+
+        const today = new Date();
+
+        const year: number = today.getFullYear();
+        const month: number = today.getMonth() + 1;
+        const day: number = today.getDate();
+        const dateSeed: number = year * 10000 + month * 100 + day;
+
+        const index: number = dateSeed % this.allPets.length;
+
+        return this.allPets[index];
     }
 
     filterPets(filters: PetFilters) {
@@ -82,10 +100,7 @@ export class PetListComponent implements OnInit {
     }
 
     onImageError(event: Event): void {
-        console.log('Image error in list component');
         const img = event.target as HTMLImageElement;
-        console.log('Failed image URL:', img.src);
         img.src = this.defaultPetImage;
-        console.log('New image URL:', img.src);
     }
 }
