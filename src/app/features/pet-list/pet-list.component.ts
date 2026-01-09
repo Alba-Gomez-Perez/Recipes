@@ -14,11 +14,23 @@ import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
     styleUrls: ['./pet-list.component.scss']
 })
 export class PetListComponent implements OnInit {
-    allPets: Pet[] = [];
     pets: Pet[] = [];
+    allPets: Pet[] = []; // Still needed for Pet of the Day
     petOfTheDay: Pet | null = null;
-    defaultPetImage: string = '/assets/default.png';
     isLoading: boolean = true;
+    defaultPetImage: string = 'assets/default.png';
+
+    // Pagination
+    currentPage: number = 1;
+    pageSize: number = 6;
+    totalPetsCount: number = 0;
+    currentFilters: PetFilters = {
+        name: '',
+        kind: null,
+        weight: 'all',
+        height: 'all',
+        length: 'all'
+    };
 
     constructor(
         private router: Router,
@@ -32,14 +44,21 @@ export class PetListComponent implements OnInit {
     async getPets() {
         this.isLoading = true;
         this.allPets = await petsService.getAllPets();
-
-        // Select pet of the day
         this.petOfTheDay = this.getPetOfTheDay();
 
-        // Subscribe to filter changes
         this.filterService.filters$.subscribe(filters => {
-            this.filterPets(filters);
+            this.currentFilters = filters;
+            this.currentPage = 1;
+            this.fetchPaginatedPets();
         });
+    }
+
+    async fetchPaginatedPets() {
+        this.isLoading = true;
+        const { pets, totalCount } = await petsService.getPets(this.currentPage, this.pageSize, this.currentFilters);
+        this.pets = pets;
+        this.totalPetsCount = totalCount;
+        this.isLoading = false;
     }
 
     getPetOfTheDay(): Pet | null {
@@ -58,41 +77,37 @@ export class PetListComponent implements OnInit {
     }
 
     filterPets(filters: PetFilters) {
-        this.pets = this.allPets.filter(pet => {
-            // Filter by Name
-            if (filters.name && !pet.name.toLowerCase().includes(filters.name.toLowerCase())) {
-                return false;
-            }
+        // This is now handled by fetchPaginatedPets via the subscription
+    }
 
-            // Filter by Kind
-            if (filters.kind && pet.kind !== filters.kind) {
-                return false;
-            }
+    get paginatedPets(): Pet[] {
+        return this.pets;
+    }
 
-            // Filter by Weight
-            if (filters.weight !== 'all') {
-                if (filters.weight === 'small' && pet.weight >= 5000) return false;
-                if (filters.weight === 'medium' && (pet.weight < 5000 || pet.weight > 15000)) return false;
-                if (filters.weight === 'large' && pet.weight <= 15000) return false;
-            }
+    get totalPages(): number {
+        return Math.ceil(this.totalPetsCount / this.pageSize);
+    }
 
-            // Filter by Height
-            if (filters.height !== 'all') {
-                if (filters.height === 'short' && pet.height >= 30) return false;
-                if (filters.height === 'average' && (pet.height < 30 || pet.height > 60)) return false;
-                if (filters.height === 'tall' && pet.height <= 60) return false;
-            }
+    get pages(): number[] {
+        return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    }
 
-            // Filter by Length
-            if (filters.length !== 'all') {
-                if (filters.length === 'short' && pet.length >= 40) return false;
-                if (filters.length === 'average' && (pet.length < 40 || pet.length > 80)) return false;
-                if (filters.length === 'long' && pet.length <= 80) return false;
-            }
+    goToPage(page: number) {
+        this.currentPage = page;
+        this.fetchPaginatedPets();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-            return true;
-        });
-        this.isLoading = false;
+    nextPage() {
+        if (this.currentPage < this.totalPages) {
+            this.goToPage(this.currentPage + 1);
+        }
+    }
+
+    prevPage() {
+        if (this.currentPage > 1) {
+            this.goToPage(this.currentPage - 1);
+        }
     }
 
     goToDetail(id: number) {
@@ -101,6 +116,8 @@ export class PetListComponent implements OnInit {
 
     onImageError(event: Event): void {
         const img = event.target as HTMLImageElement;
-        img.src = this.defaultPetImage;
+        if (img.src !== this.defaultPetImage) {
+            img.src = this.defaultPetImage;
+        }
     }
 }
