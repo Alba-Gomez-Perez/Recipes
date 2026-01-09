@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
+import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 
 @Component({
     selector: 'app-pet-detail',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, GramsToKgPipe],
     templateUrl: './pet-detail.component.html',
     styleUrls: ['./pet-detail.component.scss']
 })

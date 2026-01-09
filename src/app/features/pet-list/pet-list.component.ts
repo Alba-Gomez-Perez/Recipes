@@ -5,11 +5,12 @@ import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
 import { FilterService, PetFilters } from '../../core/services/filter.service';
 import { combineLatest } from 'rxjs';
+import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 
 @Component({
     selector: 'app-pet-list',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, GramsToKgPipe],
     templateUrl: './pet-list.component.html',
     styleUrls: ['./pet-list.component.scss']
 })
