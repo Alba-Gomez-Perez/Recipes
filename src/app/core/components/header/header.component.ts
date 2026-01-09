@@ -23,7 +23,8 @@ export class HeaderComponent implements OnInit {
         height: 'all',
         length: 'all',
         sortBy: 'name',
-        sortOrder: 'asc'
+        sortOrder: 'asc',
+        page: 1
     };
 
     constructor(
@@ -47,22 +48,21 @@ export class HeaderComponent implements OnInit {
 
     updateName(event: any) {
         const name = event.target.value;
-        this.filterService.updateFilters({ name });
+        this.filterService.updateFilters({ name, page: 1 });
     }
 
-    toggleKind(kind: 'dog' | 'cat') {
+    toggleKind(kind: 'dog' | 'cat' | null) {
         const newKind = this.filters.kind === kind ? null : kind;
-        this.filters.kind = newKind;
-        this.filterService.updateFilters({ kind: newKind });
+        this.filterService.updateFilters({ kind: newKind, page: 1 });
     }
 
     updateFilter(type: 'weight' | 'height' | 'length' | 'sortBy' | 'sortOrder', event: any) {
         const value = event.target.value;
-        this.filterService.updateFilters({ [type]: value });
+        this.filterService.updateFilters({ [type]: value, page: 1 });
     }
 
     toggleOrder() {
         const sortOrder = this.filters.sortOrder === 'asc' ? 'desc' : 'asc';
-        this.filterService.updateFilters({ sortOrder });
+        this.filterService.updateFilters({ sortOrder, page: 1 });
     }
 }

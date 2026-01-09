@@ -32,7 +32,8 @@ export class PetListComponent implements OnInit {
         height: 'all',
         length: 'all',
         sortBy: 'name',
-        sortOrder: 'asc'
+        sortOrder: 'asc',
+        page: 1
     };
 
     constructor(
@@ -41,6 +42,13 @@ export class PetListComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.currentPage = this.filterService.currentFilters.page || 1;
+        // Initialize currentPage from filterService and subscribe to filter changes
+        this.filterService.filters$.subscribe(filters => {
+            this.currentFilters = filters;
+            this.currentPage = filters.page;
+            this.fetchPaginatedPets();
+        });
         this.getPets();
     }
 
@@ -48,12 +56,7 @@ export class PetListComponent implements OnInit {
         this.isLoading = true;
         this.allPets = await petsService.getAllPets();
         this.petOfTheDay = this.getPetOfTheDay();
-
-        this.filterService.filters$.subscribe(filters => {
-            this.currentFilters = filters;
-            this.currentPage = 1;
-            this.fetchPaginatedPets();
-        });
+        // The subscription to filters is now in ngOnInit to ensure it's active before initial pet fetch
     }
 
     async fetchPaginatedPets() {
@@ -96,9 +99,10 @@ export class PetListComponent implements OnInit {
     }
 
     goToPage(page: number) {
-        this.currentPage = page;
-        this.fetchPaginatedPets();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (page >= 1 && page <= this.totalPages) {
+            this.filterService.updateFilters({ page });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     nextPage() {
