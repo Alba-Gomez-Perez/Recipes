@@ -1,20 +1,21 @@
 .pet-detail-container {
     background-color: #f5f0e6;
     height: calc(100vh - 65px);
-    padding: 1rem;
+    padding: 2rem;
+    box-sizing: border-box;
     font-family: 'Inter', sans-serif;
     color: #1a1a1a;
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: hidden;
-    justify-content: center;
+    overflow-y: auto;
+    justify-content: flex-start;
 
     .header {
         width: 100%;
         text-align: left;
         max-width: 1000px;
-        margin-bottom: 4rem;
+        margin-bottom: 2rem;
         display: flex;
         align-items: center;
         gap: 2rem;
@@ -186,6 +187,7 @@
     align-items: center;
     height: 100vh;
     width: 100%;
+    background-color: #f5f0e6;
 
     .loading-img {
         max-width: 200px;
