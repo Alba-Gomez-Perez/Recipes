@@ -1,0 +1,136 @@
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    .search-container {
+        display: flex;
+        align-items: center;
+
+        .search-input {
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            outline: none;
+            width: 200px;
+            font-family: 'Inter', sans-serif;
+
+            &:focus {
+                border-color: #2c4850;
+            }
+        }
+    }
+
+    .filter-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 1.2rem;
+
+        &.active {
+            background-color: #2c4850;
+            color: white;
+            border-color: #2c4850;
+        }
+
+        &:hover {
+            background-color: #f5f5f5;
+        }
+    }
+
+    .divider {
+        width: 1px;
+        height: 24px;
+        background-color: #ddd;
+        margin: 0 0.5rem;
+    }
+
+    .dropdown {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: #333;
+        padding: 0;
+        border-radius: 4px;
+
+        &:hover {
+            background-color: #f5f5f5;
+        }
+
+        select {
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            outline: none;
+            padding: 0.5rem;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        &.sort-dropdown {
+            background-color: #eee9de;
+            padding: 0 0.75rem;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+
+            .sort-label {
+                font-size: 0.75rem;
+                color: #666;
+                text-transform: uppercase;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+            }
+
+            select {
+                padding: 0.5rem 0.25rem;
+                font-weight: 600;
+            }
+        }
+    }
+
+    .order-toggle {
+        background: #eee9de;
+        border: 1px solid #ddd;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #2c4850;
+
+        &:hover {
+            background-color: #e5dfd0;
+            transform: scale(1.1);
+        }
+
+        .arrow {
+            font-size: 1.2rem;
+            font-weight: 800;
+            transition: transform 0.3s ease;
+            display: inline-block;
+
+            &.desc {
+                transform: rotate(180deg);
+            }
+        }
+    }
+}
