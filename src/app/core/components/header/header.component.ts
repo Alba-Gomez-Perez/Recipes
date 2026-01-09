@@ -21,7 +21,9 @@ export class HeaderComponent implements OnInit {
         kind: null,
         weight: 'all',
         height: 'all',
-        length: 'all'
+        length: 'all',
+        sortBy: 'name',
+        sortOrder: 'asc'
     };
 
     constructor(
@@ -52,8 +54,13 @@ export class HeaderComponent implements OnInit {
         this.filterService.updateFilters({ kind: newKind });
     }
 
-    updateFilter(type: 'weight' | 'height' | 'length', event: any) {
+    updateFilter(type: 'weight' | 'height' | 'length' | 'sortBy' | 'sortOrder', event: any) {
         const value = event.target.value;
         this.filterService.updateFilters({ [type]: value });
+    }
+
+    toggleOrder() {
+        const sortOrder = this.filters.sortOrder === 'asc' ? 'desc' : 'asc';
+        this.filterService.updateFilters({ sortOrder });
     }
 }

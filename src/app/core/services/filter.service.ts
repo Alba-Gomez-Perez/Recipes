@@ -7,6 +7,8 @@ export interface PetFilters {
     weight: string; // 'small' | 'medium' | 'large' | 'all'
     height: string; // 'short' | 'average' | 'tall' | 'all'
     length: string; // 'short' | 'average' | 'long' | 'all'
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
 }
 
 @Injectable({
@@ -18,7 +20,9 @@ export class FilterService {
         kind: null,
         weight: 'all',
         height: 'all',
-        length: 'all'
+        length: 'all',
+        sortBy: 'name',
+        sortOrder: 'asc'
     });
 
     filters$ = this._filters.asObservable();

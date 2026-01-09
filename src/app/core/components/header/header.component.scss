@@ -169,12 +169,29 @@
                     cursor: pointer;
                     outline: none;
                     padding: 0.5rem;
-                    -webkit-appearance: none; // Remove default arrow
+                    -webkit-appearance: none;
                     -moz-appearance: none;
                     appearance: none;
+                }
 
-                    // Add custom arrow if needed, or rely on browser default for simplicity first
-                    // For now, let's use a simple background arrow or just text
+                &.sort-dropdown {
+                    background-color: #eee9de;
+                    padding: 0 0.75rem;
+                    border-radius: 20px;
+                    border: 1px solid #ddd;
+
+                    .sort-label {
+                        font-size: 0.75rem;
+                        color: #666;
+                        text-transform: uppercase;
+                        font-weight: 700;
+                        letter-spacing: 0.5px;
+                    }
+
+                    select {
+                        padding: 0.5rem 0.25rem;
+                        font-weight: 600;
+                    }
                 }
             }
 

@@ -42,6 +42,21 @@
                     <option value="long">Long (> 80cm)</option>
                 </select>
             </div>
+            <div class="divider"></div>
+            <div class="dropdown sort-dropdown">
+                <span class="sort-label">Sort by:</span>
+                <select (change)="updateFilter('sortBy', $event)" [value]="filters.sortBy">
+                    <option value="name">Name</option>
+                    <option value="weight">Weight</option>
+                    <option value="height">Height</option>
+                    <option value="length">Length</option>
+                    <option value="kind">Kind</option>
+                </select>
+            </div>
+            <button class="order-toggle" (click)="toggleOrder()"
+                [title]="filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'">
+                <span class="arrow" [class.desc]="filters.sortOrder === 'desc'">↑</span>
+            </button>
         </div>
         }
     </div>
