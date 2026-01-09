@@ -1,6 +1,8 @@
 .pet-list-container {
   background-color: #f5f0e6;
-  min-height: 100vh;
+  height: calc(100vh - 65px);
+  overflow-y: auto;
+  box-sizing: border-box;
   padding-bottom: 2rem;
 }
 
