@@ -8,12 +8,17 @@
 
     <div class="container">
 
-        @if (pets.length > 0) {
+        @if (isLoading) {
+        <div class="loading">
+            <img src="assets/loading.png" alt="Loading..." class="loading-img">
+        </div>
+        } @else if (pets.length > 0) {
         <div class="pet-grid">
             @for (pet of pets; track pet.id) {
             <div class="pet-card" (click)="goToDetail(pet.id)">
                 <div class="card-image">
-                    <img [src]="pet.photo_url" [alt]="pet.name">
+                    <img [src]="pet.photo_url || defaultPetImage" [alt]="pet.name" (error)="onImageError($event)"
+                        onerror="this.onerror=null; this.src='/assets/default.png';">
                 </div>
                 <div class="card-content">
                     <h3>{{ pet.name }}</h3>
@@ -29,7 +34,7 @@
         </div>
         } @else {
         <div class="no-results">
-            <img src="../../../assets/no-found.png" alt="No pets found">
+            <img src="assets/nof-found.png" alt="No pets found">
         </div>
         }
     </div>

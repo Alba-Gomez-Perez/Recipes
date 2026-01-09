@@ -16,6 +16,8 @@ import { combineLatest } from 'rxjs';
 export class PetListComponent implements OnInit {
     allPets: Pet[] = [];
     pets: Pet[] = [];
+    defaultPetImage: string = '/assets/default.png';
+    isLoading: boolean = true;
 
     constructor(
         private router: Router,
@@ -27,12 +29,14 @@ export class PetListComponent implements OnInit {
     }
 
     async getPets() {
+        this.isLoading = true;
         this.allPets = await petsService.getAllPets();
 
         // Subscribe to filter changes
         this.filterService.filters$.subscribe(filters => {
             this.filterPets(filters);
         });
+        this.isLoading = false;
     }
 
     filterPets(filters: PetFilters) {
@@ -74,5 +78,13 @@ export class PetListComponent implements OnInit {
 
     goToDetail(id: number) {
         this.router.navigate(['/pets', id]);
+    }
+
+    onImageError(event: Event): void {
+        console.log('Image error in list component');
+        const img = event.target as HTMLImageElement;
+        console.log('Failed image URL:', img.src);
+        img.src = this.defaultPetImage;
+        console.log('New image URL:', img.src);
     }
 }
