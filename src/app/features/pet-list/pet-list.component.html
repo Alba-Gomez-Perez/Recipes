@@ -10,14 +10,13 @@
     </div>
 
     <div class="container">
-
         @if (isLoading) {
         <div class="loading">
             <img src="assets/loading.png" alt="Loading..." class="loading-img">
         </div>
         } @else if (pets.length > 0) {
         <div class="pet-grid">
-            @for (pet of pets; track pet.id) {
+            @for (pet of paginatedPets; track pet.id) {
             <div class="pet-card" (click)="goToDetail(pet.id)">
                 <div class="card-image">
                     <img [src]="pet.photo_url || defaultPetImage" [alt]="pet.name" (error)="onImageError($event)"
@@ -35,6 +34,26 @@
             </div>
             }
         </div>
+
+        @if (totalPages > 1) {
+        <div class="pagination">
+            <button class="page-btn prev" (click)="prevPage()" [disabled]="currentPage === 1">
+                &laquo; Prev
+            </button>
+
+            <div class="page-numbers">
+                @for (page of pages; track page) {
+                <button class="page-btn" [class.active]="currentPage === page" (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+                }
+            </div>
+
+            <button class="page-btn next" (click)="nextPage()" [disabled]="currentPage === totalPages">
+                Next &raquo;
+            </button>
+        </div>
+        }
         } @else {
         <div class="no-results">
             <img src="assets/no-found.png" alt="No pets found">
