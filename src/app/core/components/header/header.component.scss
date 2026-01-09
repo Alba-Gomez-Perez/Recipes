@@ -11,18 +11,20 @@
     z-index: 1000;
 
     .header-left {
-        .logo {
+        a.logo {
             font-size: 1.5rem;
             font-weight: 800;
             color: #1a1a1a;
             letter-spacing: -0.5px;
+            text-decoration: none;
+            cursor: pointer;
         }
     }
 
     &.detail-view {
         background-color: #2c4850;
 
-        .header-left .logo {
+        .header-left a.logo {
             color: white;
         }
     }

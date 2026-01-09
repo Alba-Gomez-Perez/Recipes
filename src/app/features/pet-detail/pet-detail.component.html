@@ -1,6 +1,9 @@
 @if (pet) {
 <div class="pet-detail-container">
     <div class="header">
+        <a routerLink="/" class="back-link">
+            <span class="back-arrow">←</span>
+        </a>
         <h1>{{ pet.name | uppercase }}</h1>
     </div>
 

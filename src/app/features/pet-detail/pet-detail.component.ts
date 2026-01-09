@@ -5,10 +5,12 @@ import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
 import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
     selector: 'app-pet-detail',
     standalone: true,
-    imports: [CommonModule, GramsToKgPipe],
+    imports: [CommonModule, GramsToKgPipe, RouterModule],
     templateUrl: './pet-detail.component.html',
     styleUrls: ['./pet-detail.component.scss']
 })
