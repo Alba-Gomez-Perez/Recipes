@@ -5,17 +5,17 @@
 }
 
 .hero-section {
-  height: 400px;
+  background: linear-gradient(135deg, #2c4850 0%, #1a2f36 100%);
   background-image: url('/assets/pet.png');
-  background-size: contain;
+  background-size: cover;
   background-repeat: no-repeat;
   background-color: #2c4850;
   background-position: center;
-  display: flex;
-  align-items: center;
-  padding: 0 4rem;
-  margin-bottom: 2rem;
+  padding: 2rem 2rem;
+  text-align: center;
+  color: white;
   position: relative;
+  margin-bottom: 4rem;
 
   &::before {
     content: '';
@@ -24,28 +24,88 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.5);
   }
 
   .hero-content {
     position: relative;
     z-index: 1;
-    color: white;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
 
     h1 {
-      font-size: 4rem;
+      font-size: 3rem;
       font-weight: 700;
-      margin-bottom: 0.5rem;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      margin: 0 0 1rem 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     p {
-      font-size: 1.5rem;
-      font-weight: 400;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      font-size: 1.2rem;
+      margin: 0 0 2rem 0;
+      opacity: 0.9;
+    }
+
+    button {
+      background: linear-gradient(135deg, #b29e97 0%, #a88676 100%);
+      color: white;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(178, 158, 151, 0.4);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      &::after {
+        content: attr(data-pet-name);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        color: white;
+        transition: opacity 0.3s ease;
+        white-space: nowrap;
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(178, 158, 151, 0.6);
+
+        &::before {
+          width: 300px;
+          height: 300px;
+        }
+
+        &::after {
+          opacity: 1;
+        }
+
+        // Hide the original text on hover
+        color: transparent;
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 6px 15px rgba(178, 158, 151, 0.4);
+      }
     }
   }
 }
