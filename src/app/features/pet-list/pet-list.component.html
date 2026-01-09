@@ -1,8 +1,11 @@
 <div class="pet-list-container">
     <div class="hero-section">
         <div class="hero-content">
-            <h1>{{ petOfTheDay?.name }}</h1>
-            <p>Say hello to the pet of the day</p>
+            <h1>Pet of the day</h1>
+            <p>Every day, one of our lovely pets is the star</p>
+            <button (click)="goToDetail(petOfTheDay?.id!)" [attr.data-pet-name]="petOfTheDay?.name">
+                Meet now
+            </button>
         </div>
     </div>
 
