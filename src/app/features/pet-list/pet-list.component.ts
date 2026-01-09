@@ -30,7 +30,9 @@ export class PetListComponent implements OnInit {
         kind: null,
         weight: 'all',
         height: 'all',
-        length: 'all'
+        length: 'all',
+        sortBy: 'name',
+        sortOrder: 'asc'
     };
 
     constructor(

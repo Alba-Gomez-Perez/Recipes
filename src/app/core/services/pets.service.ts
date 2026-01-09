@@ -49,6 +49,11 @@ const petsService = {
                     url.searchParams.append('length_lte', '80');
                 }
                 if (filters.length === 'long') url.searchParams.append('length_gt', '80');
+
+                if (filters.sortBy) {
+                    url.searchParams.append('_sort', filters.sortBy);
+                    url.searchParams.append('_order', filters.sortOrder || 'asc');
+                }
             }
 
             const response = await fetch(url.toString());
