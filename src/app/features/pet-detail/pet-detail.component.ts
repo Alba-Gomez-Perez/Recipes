@@ -13,6 +13,7 @@ import type { Pet } from '../../core/models/pet.model';
 })
 export class PetDetailComponent implements OnInit {
     pet: Pet | undefined;
+    defaultPetImage: string = '/assets/default.png';
 
     constructor(private route: ActivatedRoute) { }
 
@@ -27,5 +28,10 @@ export class PetDetailComponent implements OnInit {
 
     async getPet(id: number) {
         this.pet = await petsService.getPetById(id);
+    }
+
+    onImageError(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        img.src = this.defaultPetImage;
     }
 }

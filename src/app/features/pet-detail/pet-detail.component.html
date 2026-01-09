@@ -39,7 +39,8 @@
 
         <main class="main-image">
             <div class="image-wrapper">
-                <img [src]="pet.photo_url" [alt]="pet.name">
+                <img [src]="pet.photo_url || defaultPetImage" [alt]="pet.name" (error)="onImageError($event)"
+                    onerror="this.onerror=null; this.src='/assets/default.png';">
             </div>
             <p class="quote">{{ pet.description }}</p>
         </main>
