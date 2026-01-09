@@ -17,21 +17,7 @@
         } @else if (pets.length > 0) {
         <div class="pet-grid">
             @for (pet of paginatedPets; track pet.id) {
-            <div class="pet-card" (click)="goToDetail(pet.id)">
-                <div class="card-image">
-                    <img [src]="pet.photo_url || defaultPetImage" [alt]="pet.name" (error)="onImageError($event)"
-                        onerror="this.onerror=null; this.src='/assets/default.png';">
-                </div>
-                <div class="card-content">
-                    <h3>{{ pet.name }}</h3>
-                    <div class="card-info">
-                        <p><span class="icon">🐾</span> {{ pet.kind | titlecase }}</p>
-                        <p><span class="icon">⚖️</span> {{ pet.weight | gramsToKg }} kg</p>
-                        <p><span class="icon">📏</span> {{ pet.height }} cm</p>
-                        <p><span class="icon">↔️</span> {{ pet.length }} cm</p>
-                    </div>
-                </div>
-            </div>
+            <app-pet-card [pet]="pet" (click)="goToDetail(pet.id)"></app-pet-card>
             }
         </div>
 

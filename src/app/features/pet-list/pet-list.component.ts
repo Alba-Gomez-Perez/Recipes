@@ -5,11 +5,12 @@ import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
 import { FilterService, PetFilters } from '../../core/services/filter.service';
 import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
+import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
 
 @Component({
     selector: 'app-pet-list',
     standalone: true,
-    imports: [CommonModule, GramsToKgPipe],
+    imports: [CommonModule, GramsToKgPipe, PetCardComponent],
     templateUrl: './pet-list.component.html',
     styleUrls: ['./pet-list.component.scss']
 })
@@ -112,12 +113,5 @@ export class PetListComponent implements OnInit {
 
     goToDetail(id: number) {
         this.router.navigate(['/pets', id]);
-    }
-
-    onImageError(event: Event): void {
-        const img = event.target as HTMLImageElement;
-        if (img.src !== this.defaultPetImage) {
-            img.src = this.defaultPetImage;
-        }
     }
 }
