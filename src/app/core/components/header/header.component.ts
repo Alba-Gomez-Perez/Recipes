@@ -39,8 +39,10 @@ export class HeaderComponent implements OnInit {
             this.showFilters = !this.isDetailPage;
         });
 
-        // Initialize local filters from service
-        this.filters = this.filterService.currentFilters;
+        // Initialize local filters from service and stay in sync
+        this.filterService.filters$.subscribe(filters => {
+            this.filters = filters;
+        });
     }
 
     updateName(event: any) {
