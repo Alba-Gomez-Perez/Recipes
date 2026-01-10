@@ -23,19 +23,19 @@
 
         @if (totalPages > 1) {
         <div class="pagination">
-            <button class="page-btn prev" (click)="prevPage()" [disabled]="currentPage === 1">
+            <button class="page-btn prev" (click)="prevPage()" [disabled]="currentPage() === 1">
                 &laquo; Prev
             </button>
 
             <div class="page-numbers">
                 @for (page of pages; track page) {
-                <button class="page-btn" [class.active]="currentPage === page" (click)="goToPage(page)">
+                <button class="page-btn" [class.active]="currentPage() === page" (click)="goToPage(page)">
                     {{ page }}
                 </button>
                 }
             </div>
 
-            <button class="page-btn next" (click)="nextPage()" [disabled]="currentPage === totalPages">
+            <button class="page-btn next" (click)="nextPage()" [disabled]="currentPage() === totalPages">
                 Next &raquo;
             </button>
         </div>

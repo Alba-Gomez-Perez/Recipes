@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 
 export interface PetFilters {
     name: string;
@@ -34,11 +33,9 @@ export class FilterService {
         sortOrder: 'asc'
     };
 
-    private _filters = new BehaviorSubject<PetFilters>(this.loadFilters());
-    private _sort = new BehaviorSubject<PetSort>(this.loadSort());
-
-    filters$ = this._filters.asObservable();
-    sort$ = this._sort.asObservable();
+    // Expose signals directly
+    readonly filters = signal<PetFilters>(this.loadFilters());
+    readonly sort = signal<PetSort>(this.loadSort());
 
     private loadFilters(): PetFilters {
         if (typeof window === 'undefined') return this.DEFAULT_FILTERS;
@@ -67,26 +64,26 @@ export class FilterService {
     }
 
     updateFilters(filters: Partial<PetFilters>) {
-        const newState = { ...this._filters.value, ...filters };
-        this._filters.next(newState);
+        const newState = { ...this.filters(), ...filters };
+        this.filters.set(newState);
         if (typeof window !== 'undefined') {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newState));
         }
     }
 
     updateSort(sort: Partial<PetSort>) {
-        const newState = { ...this._sort.value, ...sort };
-        this._sort.next(newState);
+        const newState = { ...this.sort(), ...sort };
+        this.sort.set(newState);
         if (typeof window !== 'undefined') {
             localStorage.setItem(this.SORT_STORAGE_KEY, JSON.stringify(newState));
         }
     }
 
     get currentFilters() {
-        return this._filters.value;
+        return this.filters();
     }
 
     get currentSort() {
-        return this._sort.value;
+        return this.sort();
     }
 }
