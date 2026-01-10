@@ -1,0 +1,38 @@
+{
+    "$schema": "https://schema.stryker-mutator.io/stryker-config.schema.json",
+    "mutate": [
+        "src/app/**/*.ts",
+        "!src/app/**/*.spec.ts",
+        "!src/app/**/*.module.ts",
+        "!src/app/main.ts"
+    ],
+    "files": [
+        "src/**/*",
+        "karma.conf.js",
+        "public/**/*",
+        "package.json",
+        "tsconfig.app.json",
+        "tsconfig.json",
+        "angular.json"
+    ],
+    "testRunner": "karma",
+    "karma": {
+        "configFile": "karma.conf.js",
+        "projectType": "angular-cli",
+        "config": {
+            "browsers": [
+                "ChromeHeadless"
+            ]
+        }
+    },
+    "incremental": true,
+    "checkers": [
+        "typescript"
+    ],
+    "reporters": [
+        "progress",
+        "clear-text",
+        "html"
+    ],
+    "tsconfigFile": "tsconfig.app.json"
+}
