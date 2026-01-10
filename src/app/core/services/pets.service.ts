@@ -3,6 +3,101 @@ import { Pet } from "../models/pet.model";
 const API_URL: string = 'https://my-json-server.typicode.com/Feverup/fever_pets_data/pets';
 
 /**
+ * Apply pagination parameters to URL
+ * @param {URL} url - The URL object to modify
+ * @param {number} page - The page number
+ * @param {number} limit - The number of pets per page
+ */
+const applyPagination = (url: URL, page?: number, limit?: number): void => {
+    if (page !== undefined && limit !== undefined) {
+        url.searchParams.append('_page', page.toString());
+        url.searchParams.append('_limit', limit.toString());
+    }
+};
+
+/**
+ * Apply name filter to URL
+ * @param {URL} url - The URL object to modify
+ * @param {string} name - The name to filter by
+ */
+const applyNameFilter = (url: URL, name?: string): void => {
+    if (name) {
+        url.searchParams.append('name_like', name);
+    }
+};
+
+/**
+ * Apply kind filter to URL
+ * @param {URL} url - The URL object to modify
+ * @param {string} kind - The kind to filter by
+ */
+const applyKindFilter = (url: URL, kind?: string): void => {
+    if (kind) {
+        url.searchParams.append('kind', kind);
+    }
+};
+
+/**
+ * Apply weight filter to URL
+ * @param {URL} url - The URL object to modify
+ * @param {string} weight - The weight category (small, medium, large)
+ */
+const applyWeightFilter = (url: URL, weight?: string): void => {
+    if (weight === 'small') {
+        url.searchParams.append('weight_lt', '5000');
+    } else if (weight === 'medium') {
+        url.searchParams.append('weight_gte', '5000');
+        url.searchParams.append('weight_lte', '15000');
+    } else if (weight === 'large') {
+        url.searchParams.append('weight_gt', '15000');
+    }
+};
+
+/**
+ * Apply height filter to URL
+ * @param {URL} url - The URL object to modify
+ * @param {string} height - The height category (short, average, tall)
+ */
+const applyHeightFilter = (url: URL, height?: string): void => {
+    if (height === 'short') {
+        url.searchParams.append('height_lt', '30');
+    } else if (height === 'average') {
+        url.searchParams.append('height_gte', '30');
+        url.searchParams.append('height_lte', '60');
+    } else if (height === 'tall') {
+        url.searchParams.append('height_gt', '60');
+    }
+};
+
+/**
+ * Apply length filter to URL
+ * @param {URL} url - The URL object to modify
+ * @param {string} length - The length category (short, average, long)
+ */
+const applyLengthFilter = (url: URL, length?: string): void => {
+    if (length === 'short') {
+        url.searchParams.append('length_lt', '40');
+    } else if (length === 'average') {
+        url.searchParams.append('length_gte', '40');
+        url.searchParams.append('length_lte', '80');
+    } else if (length === 'long') {
+        url.searchParams.append('length_gt', '80');
+    }
+};
+
+/**
+ * Apply sort parameters to URL
+ * @param {URL} url - The URL object to modify
+ * @param {any} sort - The sort configuration
+ */
+const applySort = (url: URL, sort?: any): void => {
+    if (sort?.sortBy) {
+        url.searchParams.append('_sort', sort.sortBy);
+        url.searchParams.append('_order', sort.sortOrder || 'asc');
+    }
+};
+
+/**
  * Service to get pets from API
  */
 const petsService = {
@@ -17,46 +112,17 @@ const petsService = {
         try {
             let url = new URL(API_URL);
 
-            if (page !== undefined && limit !== undefined) {
-                url.searchParams.append('_page', page.toString());
-                url.searchParams.append('_limit', limit.toString());
-            }
+            applyPagination(url, page, limit);
 
             if (filters) {
-                if (filters.name) url.searchParams.append('name_like', filters.name);
-                if (filters.kind) url.searchParams.append('kind', filters.kind);
-
-                // Weight filters
-                if (filters.weight === 'small') url.searchParams.append('weight_lt', '5000');
-                if (filters.weight === 'medium') {
-                    url.searchParams.append('weight_gte', '5000');
-                    url.searchParams.append('weight_lte', '15000');
-                }
-                if (filters.weight === 'large') url.searchParams.append('weight_gt', '15000');
-
-                // Height filters
-                if (filters.height === 'short') url.searchParams.append('height_lt', '30');
-                if (filters.height === 'average') {
-                    url.searchParams.append('height_gte', '30');
-                    url.searchParams.append('height_lte', '60');
-                }
-                if (filters.height === 'tall') url.searchParams.append('height_gt', '60');
-
-                // Length filters
-                if (filters.length === 'short') url.searchParams.append('length_lt', '40');
-                if (filters.length === 'average') {
-                    url.searchParams.append('length_gte', '40');
-                    url.searchParams.append('length_lte', '80');
-                }
-                if (filters.length === 'long') url.searchParams.append('length_gt', '80');
+                applyNameFilter(url, filters.name);
+                applyKindFilter(url, filters.kind);
+                applyWeightFilter(url, filters.weight);
+                applyHeightFilter(url, filters.height);
+                applyLengthFilter(url, filters.length);
             }
 
-            if (sort) {
-                if (sort.sortBy) {
-                    url.searchParams.append('_sort', sort.sortBy);
-                    url.searchParams.append('_order', sort.sortOrder || 'asc');
-                }
-            }
+            applySort(url, sort);
 
             const response = await fetch(url.toString());
 
