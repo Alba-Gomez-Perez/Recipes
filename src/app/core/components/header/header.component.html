@@ -1,11 +1,34 @@
-<header class="fever-header" [class.detail-view]="isDetailPage">
+<header class="fever-header" [class.detail-view]="isDetailPage" [class.menu-open]="isMobileMenuOpen">
     <div class="header-left">
         <a routerLink="/" class="logo">Fever Pets</a>
     </div>
 
-    <div class="header-center">
+    <div class="header-center" [class.mobile-visible]="isMobileMenuOpen">
         @if (showFilters) {
         <app-pet-filters></app-pet-filters>
         }
     </div>
+
+    <div class="header-right">
+        <div class="language-switcher">
+            <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="switchLanguage('en')"
+                title="English">
+                🇺🇸
+            </button>
+            <button class="lang-btn" [class.active]="currentLang === 'es'" (click)="switchLanguage('es')"
+                title="Español">
+                🇪🇸
+            </button>
+        </div>
+
+        @if (showFilters) {
+        <button class="mobile-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen">
+            <span class="hamburger"></span>
+        </button>
+        }
+    </div>
+
+    @if (isMobileMenuOpen) {
+    <div class="mobile-backdrop" (click)="toggleMobileMenu()"></div>
+    }
 </header>

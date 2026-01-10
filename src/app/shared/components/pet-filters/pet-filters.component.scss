@@ -1,11 +1,14 @@
 .filters {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
 
     .search-container {
         display: flex;
         align-items: center;
+        flex-shrink: 0;
 
         .search-input {
             border: 1px solid #ddd;
@@ -15,11 +18,18 @@
             outline: none;
             width: 200px;
             font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
 
             &:focus {
                 border-color: #2c4850;
             }
         }
+    }
+
+    .flags-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .filter-btn {
@@ -34,6 +44,7 @@
         cursor: pointer;
         transition: all 0.2s;
         font-size: 1.2rem;
+        flex-shrink: 0;
 
         &.active {
             background-color: #2c4850;
@@ -51,6 +62,13 @@
         height: 24px;
         background-color: #ddd;
         margin: 0 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .sort-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .dropdown {
@@ -63,6 +81,8 @@
         color: #333;
         padding: 0;
         border-radius: 4px;
+        flex-shrink: 0;
+        transition: background-color 0.2s;
 
         &:hover {
             background-color: #f5f5f5;
@@ -116,6 +136,7 @@
         cursor: pointer;
         transition: all 0.2s;
         color: #2c4850;
+        flex-shrink: 0;
 
         &:hover {
             background-color: #e5dfd0;
@@ -131,6 +152,116 @@
             &.desc {
                 transform: rotate(180deg);
             }
+        }
+    }
+
+    // Tablet and medium screens - organize filters responsively
+    @media (max-width: 1400px) and (min-width: 1025px) {
+        gap: 1rem;
+        row-gap: 0.75rem;
+
+        .search-container {
+            flex: 1 1 auto;
+            min-width: 180px;
+            max-width: 280px;
+
+            .search-input {
+                width: 100%;
+            }
+        }
+
+        .flags-container {
+            flex: 0 0 auto;
+        }
+
+        .dropdown:not(.sort-dropdown) {
+            flex: 0 0 auto;
+            min-width: 110px;
+        }
+
+        .sort-container {
+            flex: 0 0 auto;
+        }
+
+        // Show only essential dividers
+        .divider {
+            display: none;
+            
+            &:first-of-type {
+                display: block;
+            }
+        }
+    }
+
+    // Large screens - everything in one row, optimal spacing
+    @media (min-width: 1551px) {
+        gap: 2rem;
+        
+        .search-container {
+            .search-input {
+                width: 200px;
+            }
+        }
+    }
+
+    @media (max-width: 1550px) {
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        padding: 0.5rem 0;
+
+        .search-container {
+            width: 100%;
+
+            .search-input {
+                width: 100%;
+            }
+        }
+
+        .divider {
+            display: none;
+        }
+
+        .flags-container {
+            width: 100%;
+            justify-content: center;
+            gap: 1rem;
+            order: unset;
+            margin-top: 0;
+        }
+
+        .sort-container {
+            width: 100%;
+            justify-content: center;
+            gap: 0.5rem;
+            order: unset;
+            margin-top: 0;
+        }
+
+        .dropdown {
+            width: 100%;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0 1rem;
+            border-radius: 20px;
+
+            select {
+                flex: 1;
+                text-align: center;
+                text-align-last: center;
+            }
+
+            &.sort-dropdown {
+                width: 100%;
+                background-color: #eee9de;
+            }
+        }
+
+        .filter-btn,
+        .order-toggle {
+            width: 100%;
+            border-radius: 20px;
+            height: 40px;
         }
     }
 }

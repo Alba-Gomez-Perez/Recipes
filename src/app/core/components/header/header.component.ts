@@ -1,32 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FilterService } from '../../services/filter.service';
 import { PetFiltersComponent } from '../../../shared/components/pet-filters/pet-filters.component';
 
 @Component({
     selector: 'app-header',
     standalone: true,
-    imports: [CommonModule, RouterModule, PetFiltersComponent],
+    imports: [CommonModule, RouterModule, PetFiltersComponent, TranslateModule],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+    private router = inject(Router);
+    private filterService = inject(FilterService);
+    public translate = inject(TranslateService);
+
     isDetailPage: boolean = false;
     showFilters: boolean = true;
-
-    constructor(
-        private router: Router,
-        private filterService: FilterService
-    ) { }
+    currentLang: string = 'en';
+    isMobileMenuOpen: boolean = false;
 
     ngOnInit() {
+        this.currentLang = this.translate.currentLang || 'en';
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd)
         ).subscribe((event: any) => {
             this.isDetailPage = event.url.includes('/pets/');
             this.showFilters = !this.isDetailPage;
+            this.isMobileMenuOpen = false; // Close menu on navigation
         });
+    }
+
+    switchLanguage(lang: string) {
+        this.translate.use(lang);
+        this.currentLang = lang;
+    }
+
+    toggleMobileMenu() {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
     }
 }
