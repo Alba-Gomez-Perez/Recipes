@@ -1,0 +1,49 @@
+<div class="pet-list-container">
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>Pet of the day</h1>
+            <p>Every day, one of our lovely pets is the star</p>
+            <button (click)="goToDetail(petOfTheDay?.id!)" [attr.data-pet-name]="petOfTheDay?.name">
+                Meet now
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        @if (isLoading) {
+        <div class="loading">
+            <img src="assets/loading.png" alt="Loading..." class="loading-img">
+        </div>
+        } @else if (pets.length > 0) {
+        <div class="pet-grid">
+            @for (pet of paginatedPets; track pet.id) {
+            <app-pet-card [pet]="pet" (click)="goToDetail(pet.id)"></app-pet-card>
+            }
+        </div>
+
+        @if (totalPages > 1) {
+        <div class="pagination">
+            <button class="page-btn prev" (click)="prevPage()" [disabled]="currentPage() === 1">
+                &laquo; Prev
+            </button>
+
+            <div class="page-numbers">
+                @for (page of pages; track page) {
+                <button class="page-btn" [class.active]="currentPage() === page" (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+                }
+            </div>
+
+            <button class="page-btn next" (click)="nextPage()" [disabled]="currentPage() === totalPages">
+                Next &raquo;
+            </button>
+        </div>
+        }
+        } @else {
+        <div class="no-results">
+            <img src="assets/no-found.png" alt="No pets found">
+        </div>
+        }
+    </div>
+</div>
