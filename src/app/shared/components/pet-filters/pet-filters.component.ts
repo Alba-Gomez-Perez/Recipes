@@ -1,11 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { FilterService, PetFilters, PetSort } from '../../../core/services/filter.service';
 
 @Component({
     selector: 'app-pet-filters',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, TranslateModule],
     templateUrl: './pet-filters.component.html',
     styleUrls: ['./pet-filters.component.scss']
 })

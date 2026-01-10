@@ -216,8 +216,10 @@
 @media (max-width: 768px) {
     .pet-detail-container {
         padding: 1rem;
-        height: auto;
+        height: calc(100vh - 65px);
+        min-height: calc(100vh - 65px);
         overflow: auto;
+        margin: 0;
 
         .header h1 {
             font-size: 3rem;
