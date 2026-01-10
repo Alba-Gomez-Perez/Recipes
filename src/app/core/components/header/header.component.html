@@ -8,4 +8,17 @@
         <app-pet-filters></app-pet-filters>
         }
     </div>
+
+    <div class="header-right">
+        <div class="language-switcher">
+            <button class="lang-btn" [class.active]="currentLang === 'en'" (click)="switchLanguage('en')"
+                title="English">
+                🇺🇸
+            </button>
+            <button class="lang-btn" [class.active]="currentLang === 'es'" (click)="switchLanguage('es')"
+                title="Español">
+                🇪🇸
+            </button>
+        </div>
+    </div>
 </header>

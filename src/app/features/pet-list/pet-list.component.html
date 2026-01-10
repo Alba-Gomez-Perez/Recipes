@@ -1,10 +1,10 @@
 <div class="pet-list-container">
     <div class="hero-section">
         <div class="hero-content">
-            <h1>Pet of the day</h1>
-            <p>Every day, one of our lovely pets is the star</p>
+            <h1>{{ 'petOfTheDayTitle' | translate }}</h1>
+            <p>{{ 'petOfTheDaySubtitle' | translate }}</p>
             <button (click)="goToDetail(petOfTheDay?.id!)" [attr.data-pet-name]="petOfTheDay?.name">
-                Meet now
+                {{ 'meetNowBtn' | translate }}
             </button>
         </div>
     </div>
@@ -12,7 +12,7 @@
     <div class="container">
         @if (isLoading) {
         <div class="loading">
-            <img src="assets/loading.png" alt="Loading..." class="loading-img">
+            <img src="assets/loading.png" [alt]="'loadingAlt' | translate" class="loading-img">
         </div>
         } @else if (pets.length > 0) {
         <div class="pet-grid">
@@ -24,7 +24,7 @@
         @if (totalPages > 1) {
         <div class="pagination">
             <button class="page-btn prev" (click)="prevPage()" [disabled]="currentPage() === 1">
-                &laquo; Prev
+                {{ 'prevBtn' | translate }}
             </button>
 
             <div class="page-numbers">
@@ -36,13 +36,13 @@
             </div>
 
             <button class="page-btn next" (click)="nextPage()" [disabled]="currentPage() === totalPages">
-                Next &raquo;
+                {{ 'nextBtn' | translate }}
             </button>
         </div>
         }
         } @else {
         <div class="no-results">
-            <img src="assets/no-found.png" alt="No pets found">
+            <img src="assets/no-found.png" [alt]="'noPetsFoundAlt' | translate">
         </div>
         }
     </div>
