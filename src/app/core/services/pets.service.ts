@@ -13,7 +13,7 @@ const petsService = {
      * @param {any} filters - Optional filters
      * @returns {Promise<{ pets: Pet[], totalCount: number }>} Pets and total count
      */
-    async getPets(page?: number, limit?: number, filters?: any): Promise<{ pets: Pet[], totalCount: number }> {
+    async getPets(page?: number, limit?: number, filters?: any, sort?: any): Promise<{ pets: Pet[], totalCount: number }> {
         try {
             let url = new URL(API_URL);
 
@@ -49,10 +49,12 @@ const petsService = {
                     url.searchParams.append('length_lte', '80');
                 }
                 if (filters.length === 'long') url.searchParams.append('length_gt', '80');
+            }
 
-                if (filters.sortBy) {
-                    url.searchParams.append('_sort', filters.sortBy);
-                    url.searchParams.append('_order', filters.sortOrder || 'asc');
+            if (sort) {
+                if (sort.sortBy) {
+                    url.searchParams.append('_sort', sort.sortBy);
+                    url.searchParams.append('_order', sort.sortOrder || 'asc');
                 }
             }
 

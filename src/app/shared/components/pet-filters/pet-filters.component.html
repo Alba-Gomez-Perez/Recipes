@@ -38,7 +38,7 @@
     <div class="divider"></div>
     <div class="dropdown sort-dropdown">
         <span class="sort-label">Sort by:</span>
-        <select (change)="updateFilter('sortBy', $event)" [value]="filters.sortBy">
+        <select (change)="updateFilter('sortBy', $event)" [value]="sort.sortBy">
             <option value="name">Name</option>
             <option value="weight">Weight</option>
             <option value="height">Height</option>
@@ -47,7 +47,7 @@
         </select>
     </div>
     <button class="order-toggle" (click)="toggleOrder()"
-        [title]="filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'">
-        <span class="arrow" [class.desc]="filters.sortOrder === 'desc'">↑</span>
+        [title]="sort.sortOrder === 'asc' ? 'Ascending' : 'Descending'">
+        <span class="arrow" [class.desc]="sort.sortOrder === 'desc'">↑</span>
     </button>
 </div>
