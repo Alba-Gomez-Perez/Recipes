@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FilterService, PetFilters } from '../../../core/services/filter.service';
+import { FilterService, PetFilters, PetSort } from '../../../core/services/filter.service';
 
 @Component({
     selector: 'app-pet-filters',
@@ -15,10 +15,12 @@ export class PetFiltersComponent implements OnInit {
         kind: null,
         weight: 'all',
         height: 'all',
-        length: 'all',
+        length: 'all'
+    };
+
+    sort: PetSort = {
         sortBy: 'name',
-        sortOrder: 'asc',
-        page: 1
+        sortOrder: 'asc'
     };
 
     constructor(private filterService: FilterService) { }
@@ -27,25 +29,32 @@ export class PetFiltersComponent implements OnInit {
         this.filterService.filters$.subscribe(filters => {
             this.filters = filters;
         });
+        this.filterService.sort$.subscribe(sort => {
+            this.sort = sort;
+        });
     }
 
     updateName(event: any) {
         const name = event.target.value;
-        this.filterService.updateFilters({ name, page: 1 });
+        this.filterService.updateFilters({ name });
     }
 
     toggleKind(kind: 'dog' | 'cat' | null) {
         const newKind = this.filters.kind === kind ? null : kind;
-        this.filterService.updateFilters({ kind: newKind, page: 1 });
+        this.filterService.updateFilters({ kind: newKind });
     }
 
     updateFilter(type: 'weight' | 'height' | 'length' | 'sortBy' | 'sortOrder', event: any) {
         const value = event.target.value;
-        this.filterService.updateFilters({ [type]: value, page: 1 });
+        if (type === 'sortBy' || type === 'sortOrder') {
+            this.filterService.updateSort({ [type]: value });
+        } else {
+            this.filterService.updateFilters({ [type]: value });
+        }
     }
 
     toggleOrder() {
-        const sortOrder = this.filters.sortOrder === 'asc' ? 'desc' : 'asc';
-        this.filterService.updateFilters({ sortOrder, page: 1 });
+        const sortOrder = this.sort.sortOrder === 'asc' ? 'desc' : 'asc';
+        this.filterService.updateSort({ sortOrder });
     }
 }

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
-import { FilterService, PetFilters } from '../../core/services/filter.service';
+import { FilterService, PetFilters, PetSort } from '../../core/services/filter.service';
 import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
 
@@ -16,10 +16,9 @@ import { PetCardComponent } from '../../shared/components/pet-card/pet-card.comp
 })
 export class PetListComponent implements OnInit {
     pets: Pet[] = [];
-    allPets: Pet[] = []; // Still needed for Pet of the Day
+    allPets: Pet[] = [];
     petOfTheDay: Pet | null = null;
     isLoading: boolean = true;
-    defaultPetImage: string = 'assets/default.png';
 
     // Pagination
     currentPage: number = 1;
@@ -30,10 +29,12 @@ export class PetListComponent implements OnInit {
         kind: null,
         weight: 'all',
         height: 'all',
-        length: 'all',
+        length: 'all'
+    };
+
+    currentSort: PetSort = {
         sortBy: 'name',
-        sortOrder: 'asc',
-        page: 1
+        sortOrder: 'asc'
     };
 
     constructor(
@@ -42,11 +43,15 @@ export class PetListComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-        this.currentPage = this.filterService.currentFilters.page || 1;
-        // Initialize currentPage from filterService and subscribe to filter changes
+        // Initialize currentPage and subscribe to filter changes
         this.filterService.filters$.subscribe(filters => {
             this.currentFilters = filters;
-            this.currentPage = filters.page;
+            this.currentPage = 1;
+            this.fetchPaginatedPets();
+        });
+        this.filterService.sort$.subscribe(sort => {
+            this.currentSort = sort;
+            this.currentPage = 1;
             this.fetchPaginatedPets();
         });
         this.getPets();
@@ -56,12 +61,11 @@ export class PetListComponent implements OnInit {
         this.isLoading = true;
         this.allPets = await petsService.getAllPets();
         this.petOfTheDay = this.getPetOfTheDay();
-        // The subscription to filters is now in ngOnInit to ensure it's active before initial pet fetch
     }
 
     async fetchPaginatedPets() {
         this.isLoading = true;
-        const { pets, totalCount } = await petsService.getPets(this.currentPage, this.pageSize, this.currentFilters);
+        const { pets, totalCount } = await petsService.getPets(this.currentPage, this.pageSize, this.currentFilters, this.currentSort);
         this.pets = pets;
         this.totalPetsCount = totalCount;
         this.isLoading = false;
@@ -82,10 +86,6 @@ export class PetListComponent implements OnInit {
         return this.allPets[index];
     }
 
-    filterPets(filters: PetFilters) {
-        // This is now handled by fetchPaginatedPets via the subscription
-    }
-
     get paginatedPets(): Pet[] {
         return this.pets;
     }
@@ -100,7 +100,8 @@ export class PetListComponent implements OnInit {
 
     goToPage(page: number) {
         if (page >= 1 && page <= this.totalPages) {
-            this.filterService.updateFilters({ page });
+            this.currentPage = page;
+            this.fetchPaginatedPets();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
