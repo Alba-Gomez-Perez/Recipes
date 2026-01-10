@@ -1,0 +1,11 @@
+<header class="fever-header" [class.detail-view]="isDetailPage">
+    <div class="header-left">
+        <a routerLink="/" class="logo">Fever Pets</a>
+    </div>
+
+    <div class="header-center">
+        @if (showFilters) {
+        <app-pet-filters></app-pet-filters>
+        }
+    </div>
+</header>
