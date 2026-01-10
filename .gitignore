@@ -11,3 +11,8 @@ out-tsc/
 .DS_Store
 *.log
 .idea/
+
+# coverage
+coverage/
+.stryker-tmp/
+reports/

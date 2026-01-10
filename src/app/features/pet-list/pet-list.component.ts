@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect, inject } from '@angular/core';
+import {Component, OnInit, signal, effect, inject, untracked} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -35,8 +35,8 @@ export class PetListComponent implements OnInit {
             this.filterService.sort();
 
             this.currentPage.set(1);
-            this.fetchPaginatedPets();
-        }, { allowSignalWrites: true });
+            untracked(() => this.fetchPaginatedPets());
+        });
 
         effect(() => {
             this.currentPage();

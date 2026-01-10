@@ -131,13 +131,18 @@ const petsService = {
                 throw new Error(`Error al obtener los datos: ${response.status}`);
             }
 
-            const totalCount = parseInt(response.headers.get('X-Total-Count') || '0', 10);
-            const data: Pet[] = await response.json();
+            const totalCountHeader = response.headers.get('X-Total-Count');
+            const data: any = await response.json();
 
             if (Array.isArray(data)) {
-                return { pets: data, totalCount: totalCount || data.length };
-            } else if ((data as any).data) {
-                return { pets: (data as any).data, totalCount: (data as any).items || totalCount };
+                const totalCount = totalCountHeader ? parseInt(totalCountHeader, 10) : data.length;
+                return { pets: data, totalCount: isNaN(totalCount) ? data.length : totalCount };
+            }
+
+            if (data?.data) {
+                const pets = data.data;
+                const totalCount = data.items ?? (totalCountHeader ? parseInt(totalCountHeader, 10) : pets.length);
+                return { pets, totalCount: isNaN(totalCount) ? pets.length : totalCount };
             }
 
             return { pets: [], totalCount: 0 };

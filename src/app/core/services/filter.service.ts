@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface PetFilters {
     name: string;
@@ -33,12 +34,20 @@ export class FilterService {
         sortOrder: 'asc'
     };
 
+    private readonly isBrowser: boolean;
+
     // Expose signals directly
-    readonly filters = signal<PetFilters>(this.loadFilters());
-    readonly sort = signal<PetSort>(this.loadSort());
+    readonly filters: any;
+    readonly sort: any;
+
+    constructor(@Inject(PLATFORM_ID) platformId: object) {
+        this.isBrowser = isPlatformBrowser(platformId);
+        this.filters = signal<PetFilters>(this.loadFilters());
+        this.sort = signal<PetSort>(this.loadSort());
+    }
 
     private loadFilters(): PetFilters {
-        if (typeof window === 'undefined') return this.DEFAULT_FILTERS;
+        if (!this.isBrowser) return this.DEFAULT_FILTERS;
         const saved = localStorage.getItem(this.STORAGE_KEY);
         if (saved) {
             try {
@@ -51,7 +60,7 @@ export class FilterService {
     }
 
     private loadSort(): PetSort {
-        if (typeof window === 'undefined') return this.DEFAULT_SORT;
+        if (!this.isBrowser) return this.DEFAULT_SORT;
         const saved = localStorage.getItem(this.SORT_STORAGE_KEY);
         if (saved) {
             try {
@@ -66,7 +75,7 @@ export class FilterService {
     updateFilters(filters: Partial<PetFilters>) {
         const newState = { ...this.filters(), ...filters };
         this.filters.set(newState);
-        if (typeof window !== 'undefined') {
+        if (this.isBrowser) {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newState));
         }
     }
@@ -74,7 +83,7 @@ export class FilterService {
     updateSort(sort: Partial<PetSort>) {
         const newState = { ...this.sort(), ...sort };
         this.sort.set(newState);
-        if (typeof window !== 'undefined') {
+        if (this.isBrowser) {
             localStorage.setItem(this.SORT_STORAGE_KEY, JSON.stringify(newState));
         }
     }

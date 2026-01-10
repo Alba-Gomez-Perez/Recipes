@@ -3,17 +3,12 @@
     "mutate": [
         "src/app/**/*.ts",
         "!src/app/**/*.spec.ts",
-        "!src/app/**/*.module.ts",
-        "!src/app/main.ts"
-    ],
-    "files": [
-        "src/**/*",
-        "karma.conf.js",
-        "public/**/*",
-        "package.json",
-        "tsconfig.app.json",
-        "tsconfig.json",
-        "angular.json"
+        "!src/app/app.ts",
+        "!src/app/app.routes.ts",
+        "!src/app/app.config.ts",
+        "!src/app/app.config.server.ts",
+        "!src/app/features/pet-detail/pet-detail.component.ts",
+        "!src/app/core/components/header/header.component.ts"
     ],
     "testRunner": "karma",
     "karma": {
