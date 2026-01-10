@@ -4,12 +4,14 @@
             (input)="updateName($event)" [value]="filterService.filters().name">
     </div>
     <div class="divider"></div>
-    <button class="filter-btn" [class.active]="filterService.filters().kind === 'dog'" (click)="toggleKind('dog')">
-        🐶
-    </button>
-    <button class="filter-btn" [class.active]="filterService.filters().kind === 'cat'" (click)="toggleKind('cat')">
-        🐱
-    </button>
+    <div class="flags-container">
+        <button class="filter-btn" [class.active]="filterService.filters().kind === 'dog'" (click)="toggleKind('dog')">
+            🐶
+        </button>
+        <button class="filter-btn" [class.active]="filterService.filters().kind === 'cat'" (click)="toggleKind('cat')">
+            🐱
+        </button>
+    </div>
     <div class="divider"></div>
     <div class="dropdown">
         <select (change)="updateFilter('weight', $event)" [value]="filterService.filters().weight">
@@ -36,18 +38,20 @@
         </select>
     </div>
     <div class="divider"></div>
-    <div class="dropdown sort-dropdown">
-        <span class="sort-label">{{ 'sortByLabel' | translate }}</span>
-        <select (change)="updateFilter('sortBy', $event)" [value]="filterService.sort().sortBy">
-            <option value="name">{{ 'sortByName' | translate }}</option>
-            <option value="weight">{{ 'sortByWeight' | translate }}</option>
-            <option value="height">{{ 'sortByHeight' | translate }}</option>
-            <option value="length">{{ 'sortByLength' | translate }}</option>
-            <option value="kind">{{ 'sortByKind' | translate }}</option>
-        </select>
+    <div class="sort-container">
+        <div class="dropdown sort-dropdown">
+            <span class="sort-label">{{ 'sortByLabel' | translate }}</span>
+            <select (change)="updateFilter('sortBy', $event)" [value]="filterService.sort().sortBy">
+                <option value="name">{{ 'sortByName' | translate }}</option>
+                <option value="weight">{{ 'sortByWeight' | translate }}</option>
+                <option value="height">{{ 'sortByHeight' | translate }}</option>
+                <option value="length">{{ 'sortByLength' | translate }}</option>
+                <option value="kind">{{ 'sortByKind' | translate }}</option>
+            </select>
+        </div>
+        <button class="order-toggle" (click)="toggleOrder()"
+            [title]="filterService.sort().sortOrder === 'asc' ? 'Ascending' : 'Descending'">
+            <span class="arrow" [class.desc]="filterService.sort().sortOrder === 'desc'">↑</span>
+        </button>
     </div>
-    <button class="order-toggle" (click)="toggleOrder()"
-        [title]="filterService.sort().sortOrder === 'asc' ? 'Ascending' : 'Descending'">
-        <span class="arrow" [class.desc]="filterService.sort().sortOrder === 'desc'">↑</span>
-    </button>
 </div>

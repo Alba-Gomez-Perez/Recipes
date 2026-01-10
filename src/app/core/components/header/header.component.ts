@@ -21,6 +21,7 @@ export class HeaderComponent implements OnInit {
     isDetailPage: boolean = false;
     showFilters: boolean = true;
     currentLang: string = 'en';
+    isMobileMenuOpen: boolean = false;
 
     ngOnInit() {
         this.currentLang = this.translate.currentLang || 'en';
@@ -29,11 +30,16 @@ export class HeaderComponent implements OnInit {
         ).subscribe((event: any) => {
             this.isDetailPage = event.url.includes('/pets/');
             this.showFilters = !this.isDetailPage;
+            this.isMobileMenuOpen = false; // Close menu on navigation
         });
     }
 
     switchLanguage(lang: string) {
         this.translate.use(lang);
         this.currentLang = lang;
+    }
+
+    toggleMobileMenu() {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
     }
 }
