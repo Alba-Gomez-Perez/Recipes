@@ -1,16 +1,17 @@
 import { Component, OnInit, signal, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
-import { FilterService} from '../../core/services/filter.service';
+import { FilterService } from '../../core/services/filter.service';
 import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
 
 @Component({
     selector: 'app-pet-list',
     standalone: true,
-    imports: [CommonModule, GramsToKgPipe, PetCardComponent],
+    imports: [CommonModule, PetCardComponent, TranslateModule],
     templateUrl: './pet-list.component.html',
     styleUrls: ['./pet-list.component.scss']
 })

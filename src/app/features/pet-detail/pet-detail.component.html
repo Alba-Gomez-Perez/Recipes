@@ -11,7 +11,7 @@
         <aside class="sidebar">
             <div class="info-item">
                 <div class="icon">⚖️</div>
-                <div class="label">WEIGHT</div>
+                <div class="label">{{ 'weightLabel' | translate }}</div>
                 <div class="value">{{ pet.weight | gramsToKg }} kg</div>
             </div>
 
@@ -19,7 +19,7 @@
 
             <div class="info-item">
                 <div class="icon">📏</div>
-                <div class="label">HEIGHT</div>
+                <div class="label">{{ 'heightLabel' | translate }}</div>
                 <div class="value">{{ pet.height }} cm</div>
             </div>
 
@@ -27,7 +27,7 @@
 
             <div class="info-item">
                 <div class="icon">↔️</div>
-                <div class="label">LENGTH</div>
+                <div class="label">{{ 'lengthLabel' | translate }}</div>
                 <div class="value">{{ pet.length }} cm</div>
             </div>
 
@@ -35,8 +35,8 @@
 
             <div class="info-item">
                 <div class="icon">🐾</div>
-                <div class="label">KIND</div>
-                <div class="value">{{ pet.kind | titlecase }}</div>
+                <div class="label">{{ 'kindLabel' | translate }}</div>
+                <div class="value">{{ pet.kind | translate }}</div>
             </div>
         </aside>
 
@@ -51,6 +51,6 @@
 </div>
 } @else {
 <div class="loading">
-    <img src="assets/loading.png" alt="Loading..." class="loading-img">
+    <img src="assets/loading.png" [alt]="'loading' | translate" class="loading-img">
 </div>
 }
