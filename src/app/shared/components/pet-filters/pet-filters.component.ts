@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FilterService, PetFilters, PetSort } from '../../../core/services/filter.service';
 
@@ -9,30 +9,8 @@ import { FilterService, PetFilters, PetSort } from '../../../core/services/filte
     templateUrl: './pet-filters.component.html',
     styleUrls: ['./pet-filters.component.scss']
 })
-export class PetFiltersComponent implements OnInit {
-    filters: PetFilters = {
-        name: '',
-        kind: null,
-        weight: 'all',
-        height: 'all',
-        length: 'all'
-    };
-
-    sort: PetSort = {
-        sortBy: 'name',
-        sortOrder: 'asc'
-    };
-
-    constructor(private filterService: FilterService) { }
-
-    ngOnInit() {
-        this.filterService.filters$.subscribe(filters => {
-            this.filters = filters;
-        });
-        this.filterService.sort$.subscribe(sort => {
-            this.sort = sort;
-        });
-    }
+export class PetFiltersComponent {
+    public filterService = inject(FilterService);
 
     updateName(event: any) {
         const name = event.target.value;
@@ -40,7 +18,7 @@ export class PetFiltersComponent implements OnInit {
     }
 
     toggleKind(kind: 'dog' | 'cat' | null) {
-        const newKind = this.filters.kind === kind ? null : kind;
+        const newKind = this.filterService.filters().kind === kind ? null : kind;
         this.filterService.updateFilters({ kind: newKind });
     }
 
@@ -54,7 +32,7 @@ export class PetFiltersComponent implements OnInit {
     }
 
     toggleOrder() {
-        const sortOrder = this.sort.sortOrder === 'asc' ? 'desc' : 'asc';
+        const sortOrder = this.filterService.sort().sortOrder === 'asc' ? 'desc' : 'asc';
         this.filterService.updateSort({ sortOrder });
     }
 }

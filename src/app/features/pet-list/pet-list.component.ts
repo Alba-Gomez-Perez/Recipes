@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import petsService from "../../core/services/pets.service";
 import type { Pet } from '../../core/models/pet.model';
-import { FilterService, PetFilters, PetSort } from '../../core/services/filter.service';
+import { FilterService} from '../../core/services/filter.service';
 import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
 
@@ -15,45 +15,35 @@ import { PetCardComponent } from '../../shared/components/pet-card/pet-card.comp
     styleUrls: ['./pet-list.component.scss']
 })
 export class PetListComponent implements OnInit {
+    public filterService = inject(FilterService);
+    private router = inject(Router);
+
     pets: Pet[] = [];
     allPets: Pet[] = [];
     petOfTheDay: Pet | null = null;
     isLoading: boolean = true;
 
     // Pagination
-    currentPage: number = 1;
+    currentPage = signal<number>(1);
     pageSize: number = 6;
     totalPetsCount: number = 0;
-    currentFilters: PetFilters = {
-        name: '',
-        kind: null,
-        weight: 'all',
-        height: 'all',
-        length: 'all'
-    };
 
-    currentSort: PetSort = {
-        sortBy: 'name',
-        sortOrder: 'asc'
-    };
+    constructor() {
+        effect(() => {
+            this.filterService.filters();
+            this.filterService.sort();
 
-    constructor(
-        private router: Router,
-        private filterService: FilterService,
-    ) { }
+            this.currentPage.set(1);
+            this.fetchPaginatedPets();
+        }, { allowSignalWrites: true });
+
+        effect(() => {
+            this.currentPage();
+            this.fetchPaginatedPets();
+        });
+    }
 
     ngOnInit() {
-        // Initialize currentPage and subscribe to filter changes
-        this.filterService.filters$.subscribe(filters => {
-            this.currentFilters = filters;
-            this.currentPage = 1;
-            this.fetchPaginatedPets();
-        });
-        this.filterService.sort$.subscribe(sort => {
-            this.currentSort = sort;
-            this.currentPage = 1;
-            this.fetchPaginatedPets();
-        });
         this.getPets();
     }
 
@@ -65,7 +55,12 @@ export class PetListComponent implements OnInit {
 
     async fetchPaginatedPets() {
         this.isLoading = true;
-        const { pets, totalCount } = await petsService.getPets(this.currentPage, this.pageSize, this.currentFilters, this.currentSort);
+        const { pets, totalCount } = await petsService.getPets(
+            this.currentPage(),
+            this.pageSize,
+            this.filterService.filters(),
+            this.filterService.sort()
+        );
         this.pets = pets;
         this.totalPetsCount = totalCount;
         this.isLoading = false;
@@ -100,21 +95,20 @@ export class PetListComponent implements OnInit {
 
     goToPage(page: number) {
         if (page >= 1 && page <= this.totalPages) {
-            this.currentPage = page;
-            this.fetchPaginatedPets();
+            this.currentPage.set(page);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
     nextPage() {
-        if (this.currentPage < this.totalPages) {
-            this.goToPage(this.currentPage + 1);
+        if (this.currentPage() < this.totalPages) {
+            this.goToPage(this.currentPage() + 1);
         }
     }
 
     prevPage() {
-        if (this.currentPage > 1) {
-            this.goToPage(this.currentPage - 1);
+        if (this.currentPage() > 1) {
+            this.goToPage(this.currentPage() - 1);
         }
     }
 
