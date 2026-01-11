@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
-import { FilterService, PetFilters, PetSort } from './filter.service';
-import { PLATFORM_ID } from '@angular/core';
-import { STORAGE_KEYS, APP_CONSTANTS, FILTER_CATEGORIES } from '../constants';
+import {TestBed} from '@angular/core/testing';
+import {FilterService, PetFilters, PetSort} from './filter.service';
+import {PLATFORM_ID} from '@angular/core';
+import {APP_CONSTANTS, FILTER_CATEGORIES, STORAGE_KEYS} from '../constants';
 
 describe('FilterService', () => {
     let service: FilterService;

@@ -1,4 +1,4 @@
-import { Pet } from "../models/pet.model";
+import {Pet} from "../models/pet.model";
 
 type PetHealthType = 'unhealthy' | 'healthy' | 'very healthy'
 

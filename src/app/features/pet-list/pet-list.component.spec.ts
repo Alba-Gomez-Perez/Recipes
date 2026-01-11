@@ -1,13 +1,13 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
-import { PetListComponent } from './pet-list.component';
-import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { FilterService } from '../../core/services/filter.service';
-import { PetsService } from '../../core/services/pets.service';
-import { ToastService } from '../../core/services/toast.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { of } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {PetListComponent} from './pet-list.component';
+import {Router} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
+import {FilterService} from '../../core/services/filter.service';
+import {PetsService} from '../../core/services/pets.service';
+import {ToastService} from '../../core/services/toast.service';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {of} from 'rxjs';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
 
 describe('PetListComponent', () => {
     let component: PetListComponent;

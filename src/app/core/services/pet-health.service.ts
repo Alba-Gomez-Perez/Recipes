@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { Pet } from '../models/pet.model';
-import { HealthCalculatorFactory } from '../utils/pet-health.calculator';
+import {Injectable} from '@angular/core';
+import {Pet} from '../models/pet.model';
+import {HealthCalculatorFactory} from '../utils/pet-health.calculator';
 
 @Injectable({
     providedIn: 'root'

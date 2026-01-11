@@ -1,6 +1,6 @@
-import { Injectable, signal, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { STORAGE_KEYS, APP_CONSTANTS, FILTER_CATEGORIES } from '../constants';
+import {Inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
+import {isPlatformBrowser} from '@angular/common';
+import {APP_CONSTANTS, FILTER_CATEGORIES, STORAGE_KEYS} from '../constants';
 
 export interface PetFilters {
     name: string;

@@ -1,15 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
-import { PetsService } from "../../core/services/pets.service";
-import type { Pet } from '../../core/models/pet.model';
-import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
-import { RouterModule } from '@angular/router';
-import { APP_CONSTANTS } from '../../core/constants';
-import { ToastService } from '../../core/services/toast.service';
-import { PetHealthService } from "../../core/services/pet-health.service";
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
+import {firstValueFrom} from 'rxjs';
+import {PetsService} from "../../core/services/pets.service";
+import type {Pet} from '../../core/models/pet.model';
+import {GramsToKgPipe} from '../../core/pipes/grams-to-kg.pipe';
+import {APP_CONSTANTS} from '../../core/constants';
+import {ToastService} from '../../core/services/toast.service';
+import {PetHealthService} from "../../core/services/pet-health.service";
 
 @Component({
     selector: 'app-pet-detail',

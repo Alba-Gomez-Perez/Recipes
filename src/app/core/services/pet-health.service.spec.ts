@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
-import { PetHealthService } from './pet-health.service';
-import { Pet } from '../models/pet.model';
-import { HealthCalculatorFactory } from '../utils/pet-health.calculator';
+import {TestBed} from '@angular/core/testing';
+import {PetHealthService} from './pet-health.service';
+import {Pet} from '../models/pet.model';
+import {HealthCalculatorFactory} from '../utils/pet-health.calculator';
 
 describe('PetHealthService', () => {
     let service: PetHealthService;

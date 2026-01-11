@@ -1,8 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PetFiltersComponent } from './pet-filters.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { FilterService } from '../../../core/services/filter.service';
-import { signal } from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {PetFiltersComponent} from './pet-filters.component';
+import {TranslateModule} from '@ngx-translate/core';
+import {FilterService} from '../../../core/services/filter.service';
 
 describe('PetFiltersComponent', () => {
     let component: PetFiltersComponent;

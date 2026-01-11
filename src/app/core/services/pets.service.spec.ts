@@ -1,10 +1,10 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { PetsService } from './pets.service';
-import { Pet } from '../models/pet.model';
-import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from '../constants';
-import { PaginationService } from './pagination.service';
-import { ToastService } from './toast.service';
+import {TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {PetsService} from './pets.service';
+import {Pet} from '../models/pet.model';
+import {API_CONSTANTS, FILTER_CATEGORIES, FILTER_THRESHOLDS} from '../constants';
+import {PaginationService} from './pagination.service';
+import {ToastService} from './toast.service';
 
 describe('PetsService', () => {
     let service: PetsService;

@@ -1,4 +1,4 @@
-import { GramsToKgPipe } from './grams-to-kg.pipe';
+import {GramsToKgPipe} from './grams-to-kg.pipe';
 
 describe('GramsToKgPipe', () => {
     let pipe: GramsToKgPipe;

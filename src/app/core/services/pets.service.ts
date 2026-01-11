@@ -1,12 +1,12 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
-import { Pet } from "../models/pet.model";
-import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from "../constants";
-import { PetFilters, PetSort } from './filter.service';
-import { ToastService } from './toast.service';
-import { PaginationService } from './pagination.service';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
+import {Observable, of} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {Pet} from "../models/pet.model";
+import {API_CONSTANTS, FILTER_CATEGORIES, FILTER_THRESHOLDS} from "../constants";
+import {PetFilters, PetSort} from './filter.service';
+import {ToastService} from './toast.service';
+import {PaginationService} from './pagination.service';
 
 export interface GetPetsParams {
     page?: number;
@@ -156,7 +156,7 @@ export class PetsService {
         const month = today.getMonth() + 1;
         const day = today.getDate();
         const dateSeed = year * 10000 + month * 100 + day;
-        
+
         return dateSeed % totalCount;
     }
 
@@ -171,43 +171,10 @@ export class PetsService {
      * @param preloadedData - Optional data from a previous search (must be page 1 and unfiltered)
      * @returns Observable with the pet of the day or null
      */
-    getPetOfTheDay(pageSize: number, _preloadedData?: { totalCount: number, pets: Pet[] }): Observable<Pet | null> {
-        const STORAGE_KEY = 'fever_pet_of_day';
-        const today = new Date().toDateString();
-        let storedPet: Pet | null = null;
-
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                if (parsed.date === today && parsed.pet && parsed.pet.name) {
-                    storedPet = parsed.pet;
-                }
-            }
-        } catch (e) {
-            console.error('Error reading local storage', e);
-        }
-
-        if (storedPet) {
-            // Try to fetch fresh data for this ID to ensure we have the latest text/details
-            return this.getPetById(storedPet.id).pipe(
-                map(freshPet => {
-                    if (freshPet) {
-                        // Update storage with fresh data
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                            date: today,
-                            pet: freshPet
-                        }));
-                        return freshPet;
-                    }
-                    // Fallback to stored pet if fetch fails (e.g. network error)
-                    return storedPet!;
-                })
-            );
-        }
-
-        // Always fetch fresh, unfiltered data to ensure the Pet of the Day remains constant regardless of current filters or sort
-        const source$ = this.getPets(1, pageSize);
+    getPetOfTheDay(pageSize: number, preloadedData?: { totalCount: number, pets: Pet[] }): Observable<Pet | null> {
+        const source$ = preloadedData
+            ? of(preloadedData)
+            : this.getPets(1, pageSize);
 
         return source$.pipe(
             switchMap(({ pets: firstPagePets, totalCount }) => {
@@ -233,17 +200,9 @@ export class PetsService {
                             return targetPagePets[positionInPage];
                         }
                         // Fallback to first pet if something went wrong
-                        return firstPagePets[0] || null;
+                        return null;
                     })
                 );
-            }),
-            tap(pet => {
-                if (pet) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        date: today,
-                        pet
-                    }));
-                }
             }),
             catchError(() => of(null))
         );

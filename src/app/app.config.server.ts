@@ -1,10 +1,10 @@
-import { mergeApplicationConfig, ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { provideServerRendering } from '@angular/ssr';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { Observable, of } from 'rxjs';
-import { readFileSync } from 'fs';
-import { join } from 'path';
-import { appConfig } from './app.config';
+import {ApplicationConfig, importProvidersFrom, mergeApplicationConfig} from '@angular/core';
+import {provideServerRendering} from '@angular/ssr';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {Observable, of} from 'rxjs';
+import {readFileSync} from 'fs';
+import {join} from 'path';
+import {appConfig} from './app.config';
 
 export class ServerTranslateLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {

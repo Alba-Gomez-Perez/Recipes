@@ -1,10 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { FilterService } from '../../services/filter.service';
-import { PetFiltersComponent } from '../../../shared/components/pet-filters/pet-filters.component';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {NavigationEnd, Router, RouterModule} from '@angular/router';
+import {filter} from 'rxjs/operators';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {FilterService} from '../../services/filter.service';
+import {PetFiltersComponent} from '../../../shared/components/pet-filters/pet-filters.component';
 
 @Component({
     selector: 'app-header',

@@ -1,15 +1,15 @@
-import { Component, OnInit, effect, inject, untracked } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { firstValueFrom } from 'rxjs';
-import { PetsService } from "../../core/services/pets.service";
-import type { Pet } from '../../core/models/pet.model';
-import { FilterService } from '../../core/services/filter.service';
-import { ToastService } from '../../core/services/toast.service';
-import { PaginationService } from '../../core/services/pagination.service';
-import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
-import { APP_CONSTANTS, FILTER_CATEGORIES } from '../../core/constants';
+import {Component, effect, inject, OnInit, untracked} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Router} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
+import {firstValueFrom} from 'rxjs';
+import {PetsService} from "../../core/services/pets.service";
+import type {Pet} from '../../core/models/pet.model';
+import {FilterService} from '../../core/services/filter.service';
+import {ToastService} from '../../core/services/toast.service';
+import {PaginationService} from '../../core/services/pagination.service';
+import {PetCardComponent} from '../../shared/components/pet-card/pet-card.component';
+import {APP_CONSTANTS, FILTER_CATEGORIES} from '../../core/constants';
 
 @Component({
     selector: 'app-pet-list',
@@ -52,9 +52,9 @@ export class PetListComponent implements OnInit {
             this.paginationService.reset();
 
             // If we were already on page 1, the page change effect won't fire,
-            // so we need to trigger the fetch manually.
+            // so we need to trigger the fetch manually for page 1.
             if (wasPageOne) {
-                void this.fetchPaginatedPets();
+                void this.fetchPaginatedPets(1);
             }
         });
 
@@ -68,18 +68,19 @@ export class PetListComponent implements OnInit {
 
             // When sort order changes, clear the cache and refetch the current page
             this.paginationService.clearCache();
-            void this.fetchPaginatedPets();
+            const currentPage = untracked(() => this.paginationService.currentPage());
+            void this.fetchPaginatedPets(currentPage);
         });
 
         effect(() => {
-            this.paginationService.currentPage(); // Dependency on current page signal
+            const page = this.paginationService.currentPage(); // Dependency on current page signal
 
             if (!this.isPageInitialized) {
                 this.isPageInitialized = true;
                 // This will trigger the initial data fetch
             }
 
-            void this.fetchPaginatedPets();
+            void this.fetchPaginatedPets(page);
         });
     }
 
@@ -112,9 +113,7 @@ export class PetListComponent implements OnInit {
         return areFiltersDefault && isSortDefault;
     }
 
-    async fetchPaginatedPets() {
-        const page = this.paginationService.currentPage();
-
+    async fetchPaginatedPets(page: number) {
         // Use cached page if available to avoid unnecessary API calls
         const cachedPage = untracked(() => this.paginationService.getPage(page));
         if (cachedPage) {
@@ -131,8 +130,8 @@ export class PetListComponent implements OnInit {
             return;
         }
 
-        const filters = this.filterService.filters();
-        const sort = this.filterService.sort();
+        const filters = untracked(() => this.filterService.filters());
+        const sort = untracked(() => this.filterService.sort());
 
         this.isLoading = true;
         this.paginationService.setFetching(true);

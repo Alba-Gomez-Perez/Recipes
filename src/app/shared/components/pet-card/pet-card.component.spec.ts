@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PetCardComponent } from './pet-card.component';
-import { TranslateModule } from '@ngx-translate/core';
-import { GramsToKgPipe } from '../../../core/pipes/grams-to-kg.pipe';
-import { Pet } from '../../../core/models/pet.model';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {PetCardComponent} from './pet-card.component';
+import {TranslateModule} from '@ngx-translate/core';
+import {GramsToKgPipe} from '../../../core/pipes/grams-to-kg.pipe';
+import {Pet} from '../../../core/models/pet.model';
 
 describe('PetCardComponent', () => {
     let component: PetCardComponent;

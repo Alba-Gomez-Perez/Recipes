@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { ToastService } from '../../../core/services/toast.service';
+import {Component, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {TranslateModule} from '@ngx-translate/core';
+import {ToastService} from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-toast',

@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
-import { App } from './app';
-import { TranslateModule } from '@ngx-translate/core';
-import { provideRouter } from '@angular/router';
-import { FilterService } from './core/services/filter.service';
+import {TestBed} from '@angular/core/testing';
+import {App} from './app';
+import {TranslateModule} from '@ngx-translate/core';
+import {provideRouter} from '@angular/router';
+import {FilterService} from './core/services/filter.service';
 
 describe('App', () => {
   beforeEach(async () => {

@@ -1,10 +1,10 @@
-import { Component, Input, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import type { Pet } from '../../../core/models/pet.model';
-import { GramsToKgPipe } from '../../../core/pipes/grams-to-kg.pipe';
-import { APP_CONSTANTS } from '../../../core/constants';
-import { PetHealthService } from '../../../core/services/pet-health.service';
+import {Component, inject, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {TranslateModule} from '@ngx-translate/core';
+import type {Pet} from '../../../core/models/pet.model';
+import {GramsToKgPipe} from '../../../core/pipes/grams-to-kg.pipe';
+import {APP_CONSTANTS} from '../../../core/constants';
+import {PetHealthService} from '../../../core/services/pet-health.service';
 
 @Component({
     selector: 'app-pet-card',

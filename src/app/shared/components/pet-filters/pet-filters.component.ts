@@ -1,7 +1,7 @@
-import { Component, inject, signal, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { FilterService, PetFilters, PetSort } from '../../../core/services/filter.service';
+import {Component, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {TranslateModule} from '@ngx-translate/core';
+import {FilterService} from '../../../core/services/filter.service';
 
 @Component({
     selector: 'app-pet-filters',
@@ -12,23 +12,10 @@ import { FilterService, PetFilters, PetSort } from '../../../core/services/filte
 })
 export class PetFiltersComponent {
     public filterService = inject(FilterService);
-    private searchName = signal<string | null>(null);
-
-    constructor() {
-        effect((onCleanup) => {
-            const name = this.searchName();
-            if (name === null) return;
-
-            const timer = setTimeout(() => {
-                this.filterService.updateFilters({ name });
-            }, 500);
-            onCleanup(() => clearTimeout(timer));
-        });
-    }
 
     updateName(event: any) {
         const name = event.target.value;
-        this.searchName.set(name);
+        this.filterService.updateFilters({ name });
     }
 
     toggleKind(kind: 'dog' | 'cat' | null) {

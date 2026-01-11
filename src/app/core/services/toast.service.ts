@@ -1,5 +1,5 @@
-import { Injectable, signal } from '@angular/core';
-import { APP_CONSTANTS } from '../constants';
+import {Injectable, signal} from '@angular/core';
+import {APP_CONSTANTS} from '../constants';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 

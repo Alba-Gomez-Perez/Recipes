@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import {computed, Injectable, signal} from '@angular/core';
 
 export interface PaginationState<T> {
     currentPage: number;
@@ -105,6 +105,7 @@ export class PaginationService<T = any> {
      * Set current page
      */
     setCurrentPage(page: number): void {
+        console.log('setCurrentPage', page)
         if (page >= 1) {
             this._currentPage.set(page);
         }
