@@ -7,7 +7,6 @@ import {PetsService} from "../../core/services/pets.service";
 import type {Pet} from '../../core/models/pet.model';
 import {GramsToKgPipe} from '../../core/pipes/grams-to-kg.pipe';
 import {APP_CONSTANTS} from '../../core/constants';
-import {ToastService} from '../../core/services/toast.service';
 import {PetHealthService} from "../../core/services/pet-health.service";
 
 @Component({
@@ -24,7 +23,6 @@ export class PetDetailComponent implements OnInit {
     private router = inject(Router);
     private healthService = inject(PetHealthService);
     private petsService = inject(PetsService);
-    private toastService = inject(ToastService);
 
     ngOnInit() {
         this.route.params.subscribe(params => {

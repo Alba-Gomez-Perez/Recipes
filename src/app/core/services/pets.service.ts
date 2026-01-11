@@ -269,7 +269,3 @@ export class PetsService {
         return of(result);
     }
 }
-
-
-// https://my-json-server.typicode.com/Feverup/fever_pets_data/pets?_page=1&_limit=6&weight_gte=15000&_sort=name&_order=asc&_t=1768095835556
-// https://my-json-server.typicode.com/Feverup/fever_pets_data/pets?_page=1&_limit=6&weight_gt=15000&_sort=weight&_order=desc&_t=1768096280688

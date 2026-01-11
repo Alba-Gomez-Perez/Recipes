@@ -9,9 +9,6 @@ import {appConfig} from './app.config';
 export class ServerTranslateLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
     try {
-      // In SSR, we can read from the filesystem. 
-      // The path depends on where the server is running.
-      // For local dev and standard builds, 'public/assets/i18n/' or 'dist/.../browser/assets/i18n/'
       const assetsPath = join(process.cwd(), 'public', 'assets', 'i18n', `${lang}.json`);
       const content = readFileSync(assetsPath, 'utf8');
       return of(JSON.parse(content));

@@ -18,7 +18,7 @@ import {APP_CONSTANTS, FILTER_CATEGORIES} from '../../core/constants';
     templateUrl: './pet-list.component.html',
     styleUrls: ['./pet-list.component.scss']
 })
-export class PetListComponent implements OnInit {
+export class PetListComponent {
     public filterService = inject(FilterService);
     public paginationService = inject(PaginationService<Pet>);
     private router = inject(Router);
@@ -82,11 +82,6 @@ export class PetListComponent implements OnInit {
 
             void this.fetchPaginatedPets(page);
         });
-    }
-
-    ngOnInit() {
-        // The initial data load is handled by the onPageChanged effect.
-        // Pet of the Day is loaded within fetchPaginatedPets.
     }
 
     async loadPetOfTheDay(preloadedData?: { totalCount: number, pets: Pet[] }) {
