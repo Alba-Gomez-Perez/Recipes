@@ -1,15 +1,15 @@
-import {Component, effect, inject, OnInit, untracked} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Router} from '@angular/router';
-import {TranslateModule} from '@ngx-translate/core';
-import {firstValueFrom} from 'rxjs';
-import {PetsService} from "../../core/services/pets.service";
-import type {Pet} from '../../core/models/pet.model';
-import {FilterService} from '../../core/services/filter.service';
-import {ToastService} from '../../core/services/toast.service';
-import {PaginationService} from '../../core/services/pagination.service';
-import {PetCardComponent} from '../../shared/components/pet-card/pet-card.component';
-import {APP_CONSTANTS, FILTER_CATEGORIES} from '../../core/constants';
+import { Component, effect, inject, untracked } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
+import { PetsService } from "../../core/services/pets.service";
+import type { Pet } from '../../core/models/pet.model';
+import {FilterService, PetFilters, PetSort} from '../../core/services/filter.service';
+import { ToastService } from '../../core/services/toast.service';
+import { PaginationService } from '../../core/services/pagination.service';
+import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
+import { APP_CONSTANTS, FILTER_CATEGORIES } from '../../core/constants';
 
 @Component({
     selector: 'app-pet-list',
@@ -95,7 +95,7 @@ export class PetListComponent {
         }
     }
 
-    private areFiltersEmpty(filters: any, sort: any): boolean {
+    private areFiltersEmpty(filters: PetFilters, sort: PetSort): boolean {
         const areFiltersDefault = !filters.name &&
             !filters.kind &&
             filters.weight === FILTER_CATEGORIES.WEIGHT.ALL &&

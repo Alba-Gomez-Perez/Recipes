@@ -15,7 +15,6 @@ import {PetFiltersComponent} from '../../../shared/components/pet-filters/pet-fi
 })
 export class HeaderComponent implements OnInit {
     private router = inject(Router);
-    private filterService = inject(FilterService);
     public translate = inject(TranslateService);
 
     isDetailPage: boolean = false;
@@ -24,10 +23,10 @@ export class HeaderComponent implements OnInit {
     isMobileMenuOpen: boolean = false;
 
     ngOnInit() {
-        this.currentLang = this.translate.currentLang || 'en';
+        this.currentLang = this.translate.getCurrentLang() || 'en';
         this.router.events.pipe(
             filter(event => event instanceof NavigationEnd)
-        ).subscribe((event: any) => {
+        ).subscribe((event: NavigationEnd) => {
             this.isDetailPage = event.url.includes('/pets/');
             this.showFilters = !this.isDetailPage;
             this.isMobileMenuOpen = false; // Close menu on navigation

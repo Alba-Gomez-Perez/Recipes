@@ -1,4 +1,4 @@
-import {Inject, Injectable, PLATFORM_ID, signal} from '@angular/core';
+import {Inject, Injectable, PLATFORM_ID, signal, WritableSignal} from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
 import {APP_CONSTANTS, FILTER_CATEGORIES, STORAGE_KEYS} from '../constants';
 
@@ -38,8 +38,8 @@ export class FilterService {
     private readonly isBrowser: boolean;
 
     // Expose signals directly
-    readonly filters: any;
-    readonly sort: any;
+    readonly filters: WritableSignal<PetFilters>;
+    readonly sort: WritableSignal<PetSort>;
 
     /**
      * Constructor
