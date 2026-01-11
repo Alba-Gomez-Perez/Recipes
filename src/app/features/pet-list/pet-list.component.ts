@@ -44,7 +44,7 @@ export class PetListComponent {
 
             if (!this.isFiltersInitialized) {
                 this.isFiltersInitialized = true;
-                return; // Skip the first run
+                return;
             }
 
             // When filters change, reset pagination to page 1 and clear the cache
@@ -63,7 +63,7 @@ export class PetListComponent {
 
             if (!this.isSortInitialized) {
                 this.isSortInitialized = true;
-                return; // Skip the first run
+                return;
             }
 
             // When sort order changes, clear the cache and refetch the current page
@@ -77,7 +77,6 @@ export class PetListComponent {
 
             if (!this.isPageInitialized) {
                 this.isPageInitialized = true;
-                // This will trigger the initial data fetch
             }
 
             void this.fetchPaginatedPets(page);

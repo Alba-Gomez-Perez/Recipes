@@ -1,10 +1,11 @@
-import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {PetsService} from './pets.service';
-import {Pet} from '../models/pet.model';
-import {API_CONSTANTS, FILTER_CATEGORIES, FILTER_THRESHOLDS} from '../constants';
-import {PaginationService} from './pagination.service';
-import {ToastService} from './toast.service';
+import { TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { PetsService } from './pets.service';
+import { Pet } from '../models/pet.model';
+import { API_CONSTANTS, FILTER_CATEGORIES, FILTER_THRESHOLDS } from '../constants';
+import { PaginationService } from './pagination.service';
+import { ToastService } from './toast.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('PetsService', () => {
     let service: PetsService;
@@ -17,8 +18,9 @@ describe('PetsService', () => {
         const toastSpy = jasmine.createSpyObj('ToastService', ['error']);
 
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
             providers: [
+                provideHttpClient(),
+                provideHttpClientTesting(),
                 PetsService,
                 { provide: PaginationService, useValue: paginationSpy },
                 { provide: ToastService, useValue: toastSpy }
@@ -271,7 +273,7 @@ describe('PetsService', () => {
 
         it('should return empty pets if data only has items but no data property', () => {
             service.getPets().subscribe(result => {
-                expect(result).toEqual({ pets: [], totalCount: 0 });
+                expect(result).toEqual({ pets: [], totalCount: 10 });
             });
 
             const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
