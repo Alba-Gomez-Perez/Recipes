@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import type { Pet } from '../../../core/models/pet.model';
 import { GramsToKgPipe } from '../../../core/pipes/grams-to-kg.pipe';
+import { APP_CONSTANTS } from '../../../core/constants';
 
 @Component({
     selector: 'app-pet-card',
@@ -13,7 +14,7 @@ import { GramsToKgPipe } from '../../../core/pipes/grams-to-kg.pipe';
 })
 export class PetCardComponent {
     @Input({ required: true }) pet!: Pet;
-    defaultPetImage: string = 'assets/default.png';
+    readonly defaultPetImage: string = APP_CONSTANTS.IMAGES.DEFAULT_PET_RELATIVE;
 
     onImageError(event: Event): void {
         const img = event.target as HTMLImageElement;

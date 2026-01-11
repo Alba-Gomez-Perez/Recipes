@@ -21,29 +21,26 @@
             }
         </div>
 
-        @if (totalPages > 1) {
         <div class="pagination">
-            <button class="page-btn prev" (click)="prevPage()" [disabled]="currentPage() === 1">
+            <button class="page-btn prev" (click)="prevPage()" [disabled]="!paginationService.canGoPrev()">
                 {{ 'prevBtn' | translate }}
             </button>
 
-            <div class="page-numbers">
-                @for (page of pages; track page) {
-                <button class="page-btn" [class.active]="currentPage() === page" (click)="goToPage(page)">
-                    {{ page }}
-                </button>
-                }
-            </div>
+            @for (page of paginationService.pages(); track page) {
+            <button class="page-btn" [class.active]="paginationService.currentPage() === page" (click)="goToPage(page)">
+                {{ page }}
+            </button>
+            }
 
-            <button class="page-btn next" (click)="nextPage()" [disabled]="currentPage() === totalPages">
+            <button class="page-btn next" (click)="nextPage()" [disabled]="!paginationService.canGoNext()">
                 {{ 'nextBtn' | translate }}
             </button>
         </div>
-        }
         } @else {
         <div class="no-results">
             <img src="assets/no-found.png" [alt]="'noPetsFoundAlt' | translate">
         </div>
         }
     </div>
+
 </div>

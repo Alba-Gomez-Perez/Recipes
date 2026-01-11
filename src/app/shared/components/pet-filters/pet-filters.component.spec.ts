@@ -10,6 +10,7 @@ describe('PetFiltersComponent', () => {
     let filterService: FilterService;
 
     beforeEach(async () => {
+        localStorage.clear();
         await TestBed.configureTestingModule({
             imports: [PetFiltersComponent, TranslateModule.forRoot()],
             providers: [FilterService]

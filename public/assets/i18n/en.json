@@ -31,5 +31,15 @@
     "kindLabel": "KIND",
     "dog": "Dog",
     "cat": "Cat",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "noMorePets": "No more pets available",
+    "errorFetchingPets": "Unable to load pets. Please try again later.",
+    "errorFetchingPet": "Unable to load pet details. Please try again later.",
+    "errorNetwork": "Network error. Please check your connection and try again.",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "errorPetNotFound": "Pet not found.",
+    "toastSuccess": "Operation completed successfully",
+    "toastError": "An error occurred",
+    "toastWarning": "Warning",
+    "toastInfo": "Information"
 }

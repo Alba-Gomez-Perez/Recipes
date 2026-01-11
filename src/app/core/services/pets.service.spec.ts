@@ -1,314 +1,347 @@
-import petsService from './pets.service';
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { PetsService } from './pets.service';
 import { Pet } from '../models/pet.model';
+import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from '../constants';
+import { PaginationService } from './pagination.service';
 
 describe('PetsService', () => {
-    let fetchSpy: jasmine.Spy;
+    let service: PetsService;
+    let httpMock: HttpTestingController;
+    let paginationServiceSpy: jasmine.SpyObj<PaginationService>;
 
     beforeEach(() => {
-        fetchSpy = spyOn(window, 'fetch');
+        const spy = jasmine.createSpyObj('PaginationService', ['findInCache']);
+
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule],
+            providers: [
+                PetsService,
+                { provide: PaginationService, useValue: spy }
+            ]
+        });
+        service = TestBed.inject(PetsService);
+        httpMock = TestBed.inject(HttpTestingController);
+        paginationServiceSpy = TestBed.inject(PaginationService) as jasmine.SpyObj<PaginationService>;
+    });
+
+    afterEach(() => {
+        httpMock.verify();
     });
 
     describe('getPets', () => {
-        it('should fetch pets with default parameters', async () => {
-            const mockPets = [{ id: 1, name: 'Rex' }] as any;
-            const mockResponse = new Response(JSON.stringify(mockPets), {
-                status: 200,
-                headers: { 'X-Total-Count': '1' }
+        it('should fetch pets with default parameters', () => {
+            const mockPets: Pet[] = [{ id: 1, name: 'Rex', kind: 'dog', weight: 1000, height: 20, length: 30, photo_url: '', description: '' }];
+
+            service.getPets().subscribe(result => {
+                expect(result.pets).toEqual(mockPets);
+                expect(result.totalCount).toBe(1);
             });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
 
-            const result = await petsService.getPets();
-
-            expect(window.fetch).toHaveBeenCalledWith(jasmine.stringMatching(/pets/));
-            expect(result).toEqual({ pets: mockPets, totalCount: 1 });
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets, {
+                headers: { [API_CONSTANTS.HEADERS.TOTAL_COUNT]: '1' }
+            });
         });
 
-        it('should apply pagination parameters', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply pagination parameters', () => {
+            const mockPets: Pet[] = [];
+            service.getPets(1, 6).subscribe();
 
-            await petsService.getPets(1, 6);
-
-            const callUrl = fetchSpy.calls.mostRecent().args[0];
-            expect(callUrl).toContain('_page=1');
-            expect(callUrl).toContain('_limit=6');
+            const req = httpMock.expectOne(req =>
+                req.url === API_CONSTANTS.BASE_URL &&
+                req.params.get(API_CONSTANTS.QUERY_PARAMS.PAGE) === '1' &&
+                req.params.get(API_CONSTANTS.QUERY_PARAMS.LIMIT) === '6'
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should apply name filter', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply name filter', () => {
+            const mockPets: Pet[] = [];
+            service.getPets(undefined, undefined, { name: 'Rex', kind: null, weight: 'all', height: 'all', length: 'all' } as any).subscribe();
 
-            await petsService.getPets(undefined, undefined, { name: 'Rex' });
-
-            const callUrl = fetchSpy.calls.mostRecent().args[0];
-            expect(callUrl).toContain('name_like=Rex');
+            const req = httpMock.expectOne(req =>
+                req.url === API_CONSTANTS.BASE_URL &&
+                req.params.get(API_CONSTANTS.QUERY_PARAMS.NAME_LIKE) === 'Rex'
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should apply kind filter', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply kind filter', () => {
+            const mockPets: Pet[] = [];
+            service.getPets(undefined, undefined, { name: '', kind: 'dog', weight: 'all', height: 'all', length: 'all' } as any).subscribe();
 
-            await petsService.getPets(undefined, undefined, { kind: 'dog' });
-
-            const callUrl = fetchSpy.calls.mostRecent().args[0];
-            expect(callUrl).toContain('kind=dog');
+            const req = httpMock.expectOne(req =>
+                req.url === API_CONSTANTS.BASE_URL &&
+                req.params.get(API_CONSTANTS.QUERY_PARAMS.KIND) === 'dog'
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should apply weight filters (small, medium, large, all)', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply weight filters (small, medium, large)', () => {
+            const mockPets: Pet[] = [];
 
             // Small
-            await petsService.getPets(undefined, undefined, { weight: 'small' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('weight_lt=5000');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: FILTER_CATEGORIES.WEIGHT.SMALL, height: 'all', length: 'all' } as any).subscribe();
+            let req = httpMock.expectOne(r => r.params.get(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LT) === FILTER_THRESHOLDS.WEIGHT.SMALL_MAX.toString());
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
 
             // Medium
-            await petsService.getPets(undefined, undefined, { weight: 'medium' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('weight_gte=5000');
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('weight_lte=15000');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: FILTER_CATEGORIES.WEIGHT.MEDIUM, height: 'all', length: 'all' } as any).subscribe();
+            req = httpMock.expectOne(r =>
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GTE) === FILTER_THRESHOLDS.WEIGHT.MEDIUM_MIN.toString() &&
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LTE) === FILTER_THRESHOLDS.WEIGHT.MEDIUM_MAX.toString()
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
 
             // Large
-            await petsService.getPets(undefined, undefined, { weight: 'large' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('weight_gt=15000');
-
-            // All/Other
-            await petsService.getPets(undefined, undefined, { weight: 'all' });
-            expect(fetchSpy.calls.mostRecent().args[0]).not.toContain('weight');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: FILTER_CATEGORIES.WEIGHT.LARGE, height: 'all', length: 'all' } as any).subscribe();
+            req = httpMock.expectOne(r => r.params.get(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GT) === FILTER_THRESHOLDS.WEIGHT.LARGE_MIN.toString());
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should apply height filters (short, average, tall, all)', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply height filters (short, average, tall)', () => {
+            const mockPets: Pet[] = [];
 
             // Short
-            await petsService.getPets(undefined, undefined, { height: 'short' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('height_lt=30');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: 'all', height: FILTER_CATEGORIES.HEIGHT.SHORT, length: 'all' } as any).subscribe();
+            let req = httpMock.expectOne(r => r.params.get(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LT) === FILTER_THRESHOLDS.HEIGHT.SHORT_MAX.toString());
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
 
             // Average
-            await petsService.getPets(undefined, undefined, { height: 'average' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('height_gte=30');
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('height_lte=60');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: 'all', height: FILTER_CATEGORIES.HEIGHT.AVERAGE, length: 'all' } as any).subscribe();
+            req = httpMock.expectOne(r =>
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GTE) === FILTER_THRESHOLDS.HEIGHT.AVERAGE_MIN.toString() &&
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LTE) === FILTER_THRESHOLDS.HEIGHT.AVERAGE_MAX.toString()
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
 
             // Tall
-            await petsService.getPets(undefined, undefined, { height: 'tall' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('height_gt=60');
-
-            // All/Other
-            await petsService.getPets(undefined, undefined, { height: 'all' });
-            expect(fetchSpy.calls.mostRecent().args[0]).not.toContain('height');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: 'all', height: FILTER_CATEGORIES.HEIGHT.TALL, length: 'all' } as any).subscribe();
+            req = httpMock.expectOne(r => r.params.get(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GT) === FILTER_THRESHOLDS.HEIGHT.TALL_MIN.toString());
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should apply length filters (short, average, long, all)', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply length filters (short, average, long)', () => {
+            const mockPets: Pet[] = [];
 
             // Short
-            await petsService.getPets(undefined, undefined, { length: 'short' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('length_lt=40');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: 'all', height: 'all', length: FILTER_CATEGORIES.LENGTH.SHORT } as any).subscribe();
+            let req = httpMock.expectOne(r => r.params.get(API_CONSTANTS.QUERY_PARAMS.LENGTH_LT) === FILTER_THRESHOLDS.LENGTH.SHORT_MAX.toString());
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
 
             // Average
-            await petsService.getPets(undefined, undefined, { length: 'average' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('length_gte=40');
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('length_lte=80');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: 'all', height: 'all', length: FILTER_CATEGORIES.LENGTH.AVERAGE } as any).subscribe();
+            req = httpMock.expectOne(r =>
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.LENGTH_GTE) === FILTER_THRESHOLDS.LENGTH.AVERAGE_MIN.toString() &&
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.LENGTH_LTE) === FILTER_THRESHOLDS.LENGTH.AVERAGE_MAX.toString()
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
 
             // Long
-            await petsService.getPets(undefined, undefined, { length: 'long' });
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('length_gt=80');
-
-            // All/Other
-            await petsService.getPets(undefined, undefined, { length: 'all' });
-            expect(fetchSpy.calls.mostRecent().args[0]).not.toContain('length');
+            service.getPets(undefined, undefined, { name: '', kind: null, weight: 'all', height: 'all', length: FILTER_CATEGORIES.LENGTH.LONG } as any).subscribe();
+            req = httpMock.expectOne(r => r.params.get(API_CONSTANTS.QUERY_PARAMS.LENGTH_GT) === FILTER_THRESHOLDS.LENGTH.LONG_MIN.toString());
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should apply sort parameters', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should apply sort parameters', () => {
+            const mockPets: Pet[] = [];
+            service.getPets(undefined, undefined, undefined, { sortBy: 'name', sortOrder: 'desc' }).subscribe();
 
-            await petsService.getPets(undefined, undefined, undefined, { sortBy: 'name', sortOrder: 'desc' });
-
-            const callUrl = fetchSpy.calls.mostRecent().args[0];
-            expect(callUrl).toContain('_sort=name');
-            expect(callUrl).toContain('_order=desc');
+            const req = httpMock.expectOne(r =>
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.SORT) === 'name' &&
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.ORDER) === 'desc'
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should default sort order to asc if not provided', async () => {
-            const mockResponse = new Response(JSON.stringify([]), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should default sort order to asc if not provided', () => {
+            const mockPets: Pet[] = [];
+            service.getPets(undefined, undefined, undefined, { sortBy: 'name' }).subscribe();
 
-            await petsService.getPets(undefined, undefined, undefined, { sortBy: 'name' });
-
-            expect(fetchSpy.calls.mostRecent().args[0]).toContain('_order=asc');
+            const req = httpMock.expectOne(r =>
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.SORT) === 'name' &&
+                r.params.get(API_CONSTANTS.QUERY_PARAMS.ORDER) === 'asc'
+            );
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPets);
         });
 
-        it('should handle alternative response format (data and items)', async () => {
+        it('should handle alternative response format (data and items)', () => {
             const mockResponseData = { data: [{ id: 1 }], items: 10 };
-            const mockResponse = new Response(JSON.stringify(mockResponseData), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
 
-            const result = await petsService.getPets();
+            service.getPets().subscribe(result => {
+                expect(result.pets).toEqual(mockResponseData.data as any);
+                expect(result.totalCount).toBe(10);
+            });
 
-            expect(result).toEqual({ pets: mockResponseData.data as any, totalCount: 10 });
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush(mockResponseData);
         });
 
-        it('should prioritize data.items over X-Total-Count header', async () => {
+        it('should prioritize data.items over X-Total-Count header', () => {
             const mockResponseData = { data: [{ id: 1 }], items: 10 };
-            const mockResponse = new Response(JSON.stringify(mockResponseData), {
-                status: 200,
-                headers: { 'X-Total-Count': '5' }
+
+            service.getPets().subscribe(result => {
+                expect(result.totalCount).toBe(10);
             });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
 
-            const result = await petsService.getPets();
-
-            expect(result).toEqual({ pets: mockResponseData.data as any, totalCount: 10 });
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush(mockResponseData, {
+                headers: { [API_CONSTANTS.HEADERS.TOTAL_COUNT]: '5' }
+            });
         });
 
-        it('should handle alternative response format (data and totalCount from headers if items missing)', async () => {
+        it('should handle alternative response format (data and totalCount from headers if items missing)', () => {
             const mockResponseData = { data: [{ id: 1 }] };
-            const mockResponse = new Response(JSON.stringify(mockResponseData), {
-                status: 200,
-                headers: { 'X-Total-Count': '5' }
+
+            service.getPets().subscribe(result => {
+                expect(result.totalCount).toBe(5);
             });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
 
-            const result = await petsService.getPets();
-
-            expect(result).toEqual({ pets: mockResponseData.data as any, totalCount: 5 });
-        });
-
-        it('should handle response where totalCount is not in headers but data is array', async () => {
-            const mockPets: any[] = [{ id: 1 }, { id: 2 }];
-            const mockResponse = new Response(JSON.stringify(mockPets), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
-
-            const result = await petsService.getPets();
-
-            expect(result).toEqual({ pets: mockPets, totalCount: 2 });
-        });
-
-        it('should fallback to pets.length if X-Total-Count is invalid/isNaN', async () => {
-            const mockPets: any[] = [{ id: 1 }];
-            const mockResponse = new Response(JSON.stringify(mockPets), {
-                status: 200,
-                headers: { 'X-Total-Count': 'invalid' }
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush(mockResponseData, {
+                headers: { [API_CONSTANTS.HEADERS.TOTAL_COUNT]: '5' }
             });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
-
-            const result = await petsService.getPets();
-            expect(result.totalCount).toBe(1);
         });
 
-        it('should fallback to pets.length in alternative format if X-Total-Count is missing', async () => {
+        it('should handle response where totalCount is not in headers but data is array', () => {
+            const mockPets: Pet[] = [{ id: 1 } as Pet, { id: 2 } as Pet];
+
+            service.getPets().subscribe(result => {
+                expect(result.pets).toEqual(mockPets);
+                expect(result.totalCount).toBe(2);
+            });
+
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush(mockPets);
+        });
+
+        it('should fallback to pets.length if X-Total-Count is invalid/isNaN', () => {
+            const mockPets: Pet[] = [{ id: 1 } as Pet];
+
+            service.getPets().subscribe(result => {
+                expect(result.totalCount).toBe(1);
+            });
+
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush(mockPets, {
+                headers: { [API_CONSTANTS.HEADERS.TOTAL_COUNT]: 'invalid' }
+            });
+        });
+
+        it('should fallback to pets.length in alternative format if X-Total-Count is missing', () => {
             const mockResponseData = { data: [{ id: 1 }] };
-            const mockResponse = new Response(JSON.stringify(mockResponseData), {
-                status: 200
-                // missing X-Total-Count and items
+
+            service.getPets().subscribe(result => {
+                expect(result.totalCount).toBe(1);
             });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
 
-            const result = await petsService.getPets();
-            expect(result.totalCount).toBe(1);
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush(mockResponseData);
         });
 
-        it('should return empty pets and 0 totalCount if data format is unknown', async () => {
-            const mockResponse = new Response(JSON.stringify({ unexpected: 'format' }), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should return empty pets and 0 totalCount if data format is unknown', () => {
+            service.getPets().subscribe(result => {
+                expect(result).toEqual({ pets: [], totalCount: 0 });
+            });
 
-            const result = await petsService.getPets();
-
-            expect(result).toEqual({ pets: [], totalCount: 0 });
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush({ unexpected: 'format' });
         });
 
-        it('should return empty pets if data only has items but no data property', async () => {
-            const mockResponse = new Response(JSON.stringify({ items: 10 }), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
-            const result = await petsService.getPets();
-            expect(result).toEqual({ pets: [], totalCount: 0 });
+        it('should return empty pets if data only has items but no data property', () => {
+            service.getPets().subscribe(result => {
+                expect(result).toEqual({ pets: [], totalCount: 0 });
+            });
+
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.flush({ items: 10 });
         });
 
-        it('should return empty pets if data is null and not log error', async () => {
+        it('should handle HTTP errors', () => {
             spyOn(console, 'error');
-            const mockResponse = new Response('null', { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
-            const result = await petsService.getPets();
-            expect(result.pets).toEqual([]);
-            expect(console.error).not.toHaveBeenCalled();
-        });
 
-        it('should log exact error message if response is not ok', async () => {
-            spyOn(console, 'error');
-            const mockResponse = new Response('', { status: 500 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+            service.getPets().subscribe({
+                error: (error) => {
+                    expect(error).toBeDefined();
+                }
+            });
 
-            const result = await petsService.getPets();
-
-            expect(result).toEqual({ pets: [], totalCount: 0 });
-            expect(console.error).toHaveBeenCalledWith('petsService.getPets:', jasmine.objectContaining({
-                message: 'Error al obtener los datos: 500'
-            }));
-        });
-
-        it('should log exact error message on network failure', async () => {
-            spyOn(console, 'error');
-            const networkError = new Error('Network failure');
-            fetchSpy.and.returnValue(Promise.reject(networkError));
-
-            const result = await petsService.getPets();
-
-            expect(result).toEqual({ pets: [], totalCount: 0 });
-            expect(console.error).toHaveBeenCalledWith('petsService.getPets:', networkError);
+            const req = httpMock.expectOne(req => req.url === API_CONSTANTS.BASE_URL);
+            req.error(new ProgressEvent('error'), { status: 500 });
+            expect(console.error).toHaveBeenCalled();
         });
     });
 
-    describe('getAllPets', () => {
-        it('should call getPets and return pets array', async () => {
-            const mockPets = [{ id: 1 }];
-            spyOn(petsService, 'getPets').and.returnValue(Promise.resolve({
-                pets: mockPets as any,
-                totalCount: 1,
-            }));
-
-            const result = await petsService.getAllPets();
-
-            expect(petsService.getPets).toHaveBeenCalled();
-            expect(result).toEqual(mockPets as any);
-        });
-    });
 
     describe('getPetById', () => {
-        it('should return a pet by id', async () => {
-            const mockPet: Partial<Pet> = { id: 1, name: 'Rex' };
-            const mockResponse = new Response(JSON.stringify(mockPet), { status: 200 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should return a pet from cache if available', () => {
+            const mockPet: Pet = { id: 1, name: 'Rex', kind: 'dog', weight: 1000, height: 20, length: 30, photo_url: '', description: '' };
+            paginationServiceSpy.findInCache.and.returnValue(mockPet);
 
-            const result = await petsService.getPetById(1);
+            service.getPetById(1).subscribe(result => {
+                expect(result).toEqual(mockPet);
+                expect(paginationServiceSpy.findInCache).toHaveBeenCalled();
+            });
 
-            expect(window.fetch).toHaveBeenCalledWith(jasmine.stringMatching(/\/pets\/1/));
-            expect(result).toEqual(mockPet as any);
+            // No HTTP request should be made
+            httpMock.expectNone(`${API_CONSTANTS.BASE_URL}/1`);
         });
 
-        it('should log exact error message if pet response is not ok', async () => {
-            spyOn(console, 'error');
-            const mockResponse = new Response('', { status: 404 });
-            fetchSpy.and.returnValue(Promise.resolve(mockResponse));
+        it('should fetch from API if not in cache', () => {
+            const mockPet: Pet = { id: 1, name: 'Rex', kind: 'dog', weight: 1000, height: 20, length: 30, photo_url: '', description: '' };
+            paginationServiceSpy.findInCache.and.returnValue(undefined);
 
-            const result = await petsService.getPetById(1);
+            service.getPetById(1).subscribe(result => {
+                expect(result).toEqual(mockPet);
+            });
 
-            expect(result).toBeUndefined();
-            expect(console.error).toHaveBeenCalledWith('petsService.getPetById:', jasmine.objectContaining({
-                message: 'Error al obtener el pet: 404'
-            }));
+            const req = httpMock.expectOne(`${API_CONSTANTS.BASE_URL}/1`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockPet);
         });
 
-        it('should log exact error message if getPetById fetch throws', async () => {
+        it('should handle 404 errors', () => {
             spyOn(console, 'error');
-            const networkError = new Error('Network error');
-            fetchSpy.and.returnValue(Promise.reject(networkError));
 
-            const result = await petsService.getPetById(1);
+            service.getPetById(999).subscribe({
+                error: (error) => {
+                    expect(error).toBeDefined();
+                }
+            });
 
-            expect(result).toBeUndefined();
-            expect(console.error).toHaveBeenCalledWith('petsService.getPetById:', networkError);
+            const req = httpMock.expectOne(`${API_CONSTANTS.BASE_URL}/999`);
+            req.error(new ProgressEvent('error'), { status: 404 });
+            expect(console.error).toHaveBeenCalled();
+        });
+
+        it('should handle network errors', () => {
+            spyOn(console, 'error');
+
+            service.getPetById(1).subscribe({
+                error: (error) => {
+                    expect(error).toBeDefined();
+                }
+            });
+
+            const req = httpMock.expectOne(`${API_CONSTANTS.BASE_URL}/1`);
+            req.error(new ProgressEvent('Network error'));
+            expect(console.error).toHaveBeenCalled();
         });
     });
 });

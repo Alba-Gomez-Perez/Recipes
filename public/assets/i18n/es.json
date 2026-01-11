@@ -31,5 +31,16 @@
     "kindLabel": "TIPO",
     "dog": "Perro",
     "cat": "Gato",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "health": "Salud",
+    "noMorePets": "No hay más mascotas disponibles",
+    "errorFetchingPets": "No se pudieron cargar las mascotas. Por favor, inténtalo de nuevo más tarde.",
+    "errorFetchingPet": "No se pudieron cargar los detalles de la mascota. Por favor, inténtalo de nuevo más tarde.",
+    "errorNetwork": "Error de red. Por favor, verifica tu conexión e inténtalo de nuevo.",
+    "errorGeneric": "Algo salió mal. Por favor, inténtalo de nuevo.",
+    "errorPetNotFound": "Mascota no encontrada.",
+    "toastSuccess": "Operación completada con éxito",
+    "toastError": "Ocurrió un error",
+    "toastWarning": "Advertencia",
+    "toastInfo": "Información"
 }

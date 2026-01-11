@@ -1,186 +1,271 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { Pet } from "../models/pet.model";
+import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from "../constants";
+import { PetFilters, PetSort } from './filter.service';
+import { ToastService } from './toast.service';
+import { PaginationService } from './pagination.service';
 
-const API_URL: string = 'https://my-json-server.typicode.com/Feverup/fever_pets_data/pets';
+export interface GetPetsParams {
+    page?: number;
+    limit?: number;
+    filters?: PetFilters;
+    sort?: PetSort;
+}
 
-/**
- * Apply pagination parameters to URL
- * @param {URL} url - The URL object to modify
- * @param {number} page - The page number
- * @param {number} limit - The number of pets per page
- */
-const applyPagination = (url: URL, page?: number, limit?: number): void => {
-    if (page !== undefined && limit !== undefined) {
-        url.searchParams.append('_page', page.toString());
-        url.searchParams.append('_limit', limit.toString());
-    }
-};
-
-/**
- * Apply name filter to URL
- * @param {URL} url - The URL object to modify
- * @param {string} name - The name to filter by
- */
-const applyNameFilter = (url: URL, name?: string): void => {
-    if (name) {
-        url.searchParams.append('name_like', name);
-    }
-};
+export interface GetPetsResponse {
+    pets: Pet[];
+    totalCount: number;
+}
 
 /**
- * Apply kind filter to URL
- * @param {URL} url - The URL object to modify
- * @param {string} kind - The kind to filter by
+ * Builds HttpParams from pagination, filters, and sort parameters
  */
-const applyKindFilter = (url: URL, kind?: string): void => {
-    if (kind) {
-        url.searchParams.append('kind', kind);
-    }
-};
+function buildQueryParams(params: GetPetsParams): HttpParams {
+    let httpParams = new HttpParams();
 
-/**
- * Apply weight filter to URL
- * @param {URL} url - The URL object to modify
- * @param {string} weight - The weight category (small, medium, large)
- */
-const applyWeightFilter = (url: URL, weight?: string): void => {
-    if (weight === 'small') {
-        url.searchParams.append('weight_lt', '5000');
-    } else if (weight === 'medium') {
-        url.searchParams.append('weight_gte', '5000');
-        url.searchParams.append('weight_lte', '15000');
-    } else if (weight === 'large') {
-        url.searchParams.append('weight_gt', '15000');
+    // Pagination
+    if (params.page !== undefined && params.limit !== undefined) {
+        httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.PAGE, params.page.toString());
+        httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LIMIT, params.limit.toString());
     }
-};
 
-/**
- * Apply height filter to URL
- * @param {URL} url - The URL object to modify
- * @param {string} height - The height category (short, average, tall)
- */
-const applyHeightFilter = (url: URL, height?: string): void => {
-    if (height === 'short') {
-        url.searchParams.append('height_lt', '30');
-    } else if (height === 'average') {
-        url.searchParams.append('height_gte', '30');
-        url.searchParams.append('height_lte', '60');
-    } else if (height === 'tall') {
-        url.searchParams.append('height_gt', '60');
-    }
-};
+    // Filters
+    if (params.filters) {
+        const filters = params.filters;
 
-/**
- * Apply length filter to URL
- * @param {URL} url - The URL object to modify
- * @param {string} length - The length category (short, average, long)
- */
-const applyLengthFilter = (url: URL, length?: string): void => {
-    if (length === 'short') {
-        url.searchParams.append('length_lt', '40');
-    } else if (length === 'average') {
-        url.searchParams.append('length_gte', '40');
-        url.searchParams.append('length_lte', '80');
-    } else if (length === 'long') {
-        url.searchParams.append('length_gt', '80');
-    }
-};
+        if (filters.name) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.NAME_LIKE, filters.name);
+        }
 
-/**
- * Apply sort parameters to URL
- * @param {URL} url - The URL object to modify
- * @param {any} sort - The sort configuration
- */
-const applySort = (url: URL, sort?: any): void => {
-    if (sort?.sortBy) {
-        url.searchParams.append('_sort', sort.sortBy);
-        url.searchParams.append('_order', sort.sortOrder || 'asc');
+        if (filters.kind) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.KIND, filters.kind);
+        }
+
+        // Weight filter
+        if (filters.weight === FILTER_CATEGORIES.WEIGHT.SMALL) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LT, FILTER_THRESHOLDS.WEIGHT.SMALL_MAX.toString());
+        } else if (filters.weight === FILTER_CATEGORIES.WEIGHT.MEDIUM) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GTE, FILTER_THRESHOLDS.WEIGHT.MEDIUM_MIN.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LTE, FILTER_THRESHOLDS.WEIGHT.MEDIUM_MAX.toString());
+        } else if (filters.weight === FILTER_CATEGORIES.WEIGHT.LARGE) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GT, FILTER_THRESHOLDS.WEIGHT.LARGE_MIN.toString());
+        }
+
+        // Height filter
+        if (filters.height === FILTER_CATEGORIES.HEIGHT.SHORT) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LT, FILTER_THRESHOLDS.HEIGHT.SHORT_MAX.toString());
+        } else if (filters.height === FILTER_CATEGORIES.HEIGHT.AVERAGE) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GTE, FILTER_THRESHOLDS.HEIGHT.AVERAGE_MIN.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LTE, FILTER_THRESHOLDS.HEIGHT.AVERAGE_MAX.toString());
+        } else if (filters.height === FILTER_CATEGORIES.HEIGHT.TALL) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GT, FILTER_THRESHOLDS.HEIGHT.TALL_MIN.toString());
+        }
+
+        // Length filter
+        if (filters.length === FILTER_CATEGORIES.LENGTH.SHORT) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_LT, FILTER_THRESHOLDS.LENGTH.SHORT_MAX.toString());
+        } else if (filters.length === FILTER_CATEGORIES.LENGTH.AVERAGE) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_GTE, FILTER_THRESHOLDS.LENGTH.AVERAGE_MIN.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_LTE, FILTER_THRESHOLDS.LENGTH.AVERAGE_MAX.toString());
+        } else if (filters.length === FILTER_CATEGORIES.LENGTH.LONG) {
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_GT, FILTER_THRESHOLDS.LENGTH.LONG_MIN.toString());
+        }
     }
-};
+
+    // Sort
+    if (params.sort?.sortBy) {
+        httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.SORT, params.sort.sortBy);
+        httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.ORDER, params.sort.sortOrder || 'asc');
+    }
+
+    return httpParams;
+}
 
 /**
  * Service to get pets from API
  */
-const petsService = {
+@Injectable({
+    providedIn: 'root'
+})
+export class PetsService {
+    private readonly http = inject(HttpClient);
+    private readonly toastService = inject(ToastService);
+    private readonly paginationService = inject(PaginationService);
+    private readonly apiUrl = API_CONSTANTS.BASE_URL;
+
     /**
      * Get pets with pagination and filters
-     * @param {number} page - The page number
-     * @param {number} limit - The number of pets per page
-     * @param {any} filters - Optional filters
-     * @returns {Promise<{ pets: Pet[], totalCount: number }>} Pets and total count
+     * @param page - The page number
+     * @param limit - The number of pets per page
+     * @param filters - Optional filters
+     * @param sort - Optional sort configuration
+     * @returns Observable with pets and total count
      */
-    async getPets(page?: number, limit?: number, filters?: any, sort?: any): Promise<{ pets: Pet[], totalCount: number }> {
-        try {
-            let url = new URL(API_URL);
+    getPets(page?: number, limit?: number, filters?: PetFilters, sort?: PetSort): Observable<GetPetsResponse> {
+        let params = buildQueryParams({ page, limit, filters, sort });
 
-            applyPagination(url, page, limit);
+        // Add cache busting to ensure we get headers like X-Total-Count
+        params = params.append('_t', Date.now().toString());
 
-            if (filters) {
-                applyNameFilter(url, filters.name);
-                applyKindFilter(url, filters.kind);
-                applyWeightFilter(url, filters.weight);
-                applyHeightFilter(url, filters.height);
-                applyLengthFilter(url, filters.length);
-            }
+        return this.http.get<Pet[]>(this.apiUrl, {
+            params,
+            observe: 'response'
+        }).pipe(
+            map(response => {
+                const totalCountHeader = response.headers.get(API_CONSTANTS.HEADERS.TOTAL_COUNT);
+                const data: any = response.body;
 
-            applySort(url, sort);
+                if (Array.isArray(data)) {
+                    const totalCount = totalCountHeader ? parseInt(totalCountHeader, 10) : data.length;
+                    return {
+                        pets: data,
+                        totalCount: isNaN(totalCount) ? data.length : totalCount
+                    };
+                }
 
-            const response = await fetch(url.toString());
+                if (data?.data) {
+                    const pets = data.data;
+                    const totalCount = data.items ?? (totalCountHeader ? parseInt(totalCountHeader, 10) : pets.length);
+                    return {
+                        pets,
+                        totalCount: isNaN(totalCount) ? pets.length : totalCount
+                    };
+                }
 
-            // Error response
-            if (!response.ok) {
-                throw new Error(`Error al obtener los datos: ${response.status}`);
-            }
-
-            const totalCountHeader = response.headers.get('X-Total-Count');
-            const data: any = await response.json();
-
-            if (Array.isArray(data)) {
-                const totalCount = totalCountHeader ? parseInt(totalCountHeader, 10) : data.length;
-                return { pets: data, totalCount: isNaN(totalCount) ? data.length : totalCount };
-            }
-
-            if (data?.data) {
-                const pets = data.data;
-                const totalCount = data.items ?? (totalCountHeader ? parseInt(totalCountHeader, 10) : pets.length);
-                return { pets, totalCount: isNaN(totalCount) ? pets.length : totalCount };
-            }
-
-            return { pets: [], totalCount: 0 };
-        } catch (error) {
-            console.error('petsService.getPets:', error);
-            return { pets: [], totalCount: 0 };
-        }
-    },
+                return { pets: [], totalCount: 0 };
+            }),
+            catchError((error: HttpErrorResponse) => {
+                return this.handleError<GetPetsResponse>('getPets', { pets: [], totalCount: 0 }, error);
+            })
+        );
+    }
 
     /**
-     * Get all pets (for Pet of the Day)
-     * @returns {Promise<Pet[]>} All pets
+     * Calculate the pet of the day index based on the current date
+     * @param totalCount - Total number of pets
+     * @returns The index (0-based) of the pet of the day
      */
-    async getAllPets(): Promise<Pet[]> {
-        const { pets } = await this.getPets();
-        return pets;
-    },
+    private calculatePetOfTheDayIndex(totalCount: number): number {
+        if (totalCount === 0) return -1;
+
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() + 1;
+        const day = today.getDate();
+        const dateSeed = year * 10000 + month * 100 + day;
+
+        return dateSeed % totalCount;
+    }
+
+    /**
+     * Get the pet of the day
+     * Algorithm:
+     * 1. Fetch first page to get total count
+     * 2. Calculate which pet should be pet of the day based on date
+     * 3. If it's in first page, return it
+     * 4. Otherwise, fetch the specific page containing it
+     * @param pageSize - Page size to use for fetching
+     * @param preloadedData - Optional data from a previous search (must be page 1 and unfiltered)
+     * @returns Observable with the pet of the day or null
+     */
+    getPetOfTheDay(pageSize: number, preloadedData?: { totalCount: number, pets: Pet[] }): Observable<Pet | null> {
+        const source$ = preloadedData
+            ? of(preloadedData)
+            : this.getPets(1, pageSize);
+
+        return source$.pipe(
+            switchMap(({ pets: firstPagePets, totalCount }) => {
+                if (totalCount === 0) {
+                    return of(null);
+                }
+
+                const petOfTheDayIndex = this.calculatePetOfTheDayIndex(totalCount);
+
+                // If pet is in first page, return it
+                if (petOfTheDayIndex < firstPagePets.length) {
+                    return of(firstPagePets[petOfTheDayIndex]);
+                }
+
+                // Calculate which page contains the pet
+                const targetPage = Math.floor(petOfTheDayIndex / pageSize) + 1;
+                const positionInPage = petOfTheDayIndex % pageSize;
+
+                // Fetch the target page
+                return this.getPets(targetPage, pageSize).pipe(
+                    map(({ pets: targetPagePets }) => {
+                        if (targetPagePets.length > positionInPage) {
+                            return targetPagePets[positionInPage];
+                        }
+                        // Fallback to first pet if something went wrong
+                        return firstPagePets[0] || null;
+                    })
+                );
+            }),
+            catchError(() => of(null))
+        );
+    }
 
     /**
      * Get a pet by id
-     * @param {number} id - The id of the pet
-     * @returns {Promise<Pet | undefined>} The pet found
+     * @param id - The id of the pet
+     * @returns Observable with the pet found, or undefined if not found
      */
-    async getPetById(id: number): Promise<Pet | undefined> {
-        try {
-            const response = await fetch(`${API_URL}/${id}`);
-
-            if (!response.ok) {
-                throw new Error(`Error al obtener el pet: ${response.status}`);
-            }
-
-            const data: Pet = await response.json();
-            return data;
-        } catch (error) {
-            console.error('petsService.getPetById:', error);
-            return undefined;
+    /**
+     * Get a pet by id
+     * @param id - The id of the pet
+     * @returns Observable with the pet found, or undefined if not found
+     */
+    getPetById(id: number): Observable<Pet | undefined> {
+        // Check local cache first
+        const cachedPet = this.paginationService.findInCache(pet => pet.id === id);
+        if (cachedPet) {
+            return of(cachedPet);
         }
-    },
-};
 
-export default petsService;
+        return this.http.get<Pet>(`${this.apiUrl}/${id}`).pipe(
+            catchError((error: HttpErrorResponse) => {
+                console.error(`petsService.getPetById:`, error);
+                if (error.status === 404) {
+                    this.toastService.error('errorPetNotFound');
+                } else if (error.status === 0 || error.error instanceof ProgressEvent) {
+                    this.toastService.error('errorNetwork');
+                } else {
+                    this.toastService.error('errorFetchingPet');
+                }
+                // Return undefined instead of throwing
+                return of(undefined);
+            })
+        );
+    }
+
+    /**
+     * Handle HTTP errors
+     * @param operation - Name of the operation that failed
+     * @param result - Optional value to return as the observable result
+     * @param error - The HTTP error response
+     */
+    private handleError<T>(operation: string, result: T, error: HttpErrorResponse): Observable<T> {
+        console.error(`petsService.${operation}:`, error);
+
+        // Show user-friendly error message
+        if (error.status === 0 || error.error instanceof ProgressEvent) {
+            // Network error
+            this.toastService.error('errorNetwork');
+        } else if (error.status >= 500) {
+            // Server error
+            this.toastService.error('errorFetchingPets');
+        } else if (error.status >= 400) {
+            // Client error
+            this.toastService.error('errorFetchingPets');
+        } else {
+            // Other errors
+            this.toastService.error('errorGeneric');
+        }
+
+        // Return a safe result
+        return of(result);
+    }
+}

@@ -1,11 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { FilterService, PetFilters, PetSort } from './filter.service';
 import { PLATFORM_ID } from '@angular/core';
+import { STORAGE_KEYS, APP_CONSTANTS, FILTER_CATEGORIES } from '../constants';
 
 describe('FilterService', () => {
     let service: FilterService;
-    const STORAGE_KEY = 'fever_pet_filters';
-    const SORT_STORAGE_KEY = 'fever_pet_sort';
+    const STORAGE_KEY = STORAGE_KEYS.PET_FILTERS;
+    const SORT_STORAGE_KEY = STORAGE_KEYS.PET_SORT;
 
     beforeEach(() => {
         localStorage.clear();
@@ -26,16 +27,16 @@ describe('FilterService', () => {
         expect(service.filters()).toEqual({
             name: '',
             kind: null,
-            weight: 'all',
-            height: 'all',
-            length: 'all'
+            weight: FILTER_CATEGORIES.WEIGHT.ALL,
+            height: FILTER_CATEGORIES.HEIGHT.ALL,
+            length: FILTER_CATEGORIES.LENGTH.ALL
         });
     });
 
     it('should initialize with default sort if nothing in localStorage', () => {
         expect(service.sort()).toEqual({
-            sortBy: 'name',
-            sortOrder: 'asc'
+            sortBy: APP_CONSTANTS.DEFAULT_SORT.SORT_BY,
+            sortOrder: APP_CONSTANTS.DEFAULT_SORT.SORT_ORDER
         });
     });
 
@@ -132,7 +133,7 @@ describe('FilterService', () => {
         const newService = TestBed.runInInjectionContext(() => new FilterService('browser' as any));
         expect(newService.filters().name).toBe('Buddy');
         expect(newService.filters().kind).toBeNull(); // default
-        expect(newService.filters().weight).toBe('all'); // default
+        expect(newService.filters().weight).toBe(FILTER_CATEGORIES.WEIGHT.ALL); // default
     });
 
     it('should merge saved sort with default sort', () => {
