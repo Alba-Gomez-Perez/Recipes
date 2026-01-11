@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, effect, inject, untracked, computed } from '@angular/core';
+import { Component, OnInit, effect, inject, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,7 +8,6 @@ import type { Pet } from '../../core/models/pet.model';
 import { FilterService } from '../../core/services/filter.service';
 import { ToastService } from '../../core/services/toast.service';
 import { PaginationService } from '../../core/services/pagination.service';
-import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 import { PetCardComponent } from '../../shared/components/pet-card/pet-card.component';
 import { APP_CONSTANTS, FILTER_CATEGORIES } from '../../core/constants';
 
@@ -30,27 +29,63 @@ export class PetListComponent implements OnInit {
     petOfTheDay: Pet | null = null;
     isLoading: boolean = true;
 
-
-    private onFiltersChanged = effect(() => {
-        this.filterService.filters();
-        this.filterService.sort();
-        // Reset pagination state when filters or sort change
-        this.paginationService.reset();
-    });
+    // --- Effect Initialization Flags ---
+    private isFiltersInitialized = false;
+    private isSortInitialized = false;
+    private isPageInitialized = false;
 
     constructor() {
-        // Set page size
+        // Set page size for pagination
         this.paginationService.setPageSize(APP_CONSTANTS.DEFAULT_PAGE_SIZE);
 
-        // Fetch pets when page changes
+        // --- Effects for Data Fetching Logic ---
         effect(() => {
-            this.paginationService.currentPage();
-            this.fetchPaginatedPets();
+            this.filterService.filters(); // Dependency on filters signal
+
+            if (!this.isFiltersInitialized) {
+                this.isFiltersInitialized = true;
+                return; // Skip the first run
+            }
+
+            // When filters change, reset pagination to page 1 and clear the cache
+            const wasPageOne = untracked(() => this.paginationService.currentPage() === 1);
+            this.paginationService.reset();
+
+            // If we were already on page 1, the page change effect won't fire,
+            // so we need to trigger the fetch manually.
+            if (wasPageOne) {
+                void this.fetchPaginatedPets();
+            }
+        });
+
+        effect(() => {
+            this.filterService.sort(); // Dependency on sort signal
+
+            if (!this.isSortInitialized) {
+                this.isSortInitialized = true;
+                return; // Skip the first run
+            }
+
+            // When sort order changes, clear the cache and refetch the current page
+            this.paginationService.clearCache();
+            void this.fetchPaginatedPets();
+        });
+
+        effect(() => {
+            this.paginationService.currentPage(); // Dependency on current page signal
+
+            if (!this.isPageInitialized) {
+                this.isPageInitialized = true;
+                // This will trigger the initial data fetch
+            }
+
+            void this.fetchPaginatedPets();
         });
     }
 
     ngOnInit() {
-        // We load pet of the day in fetchPaginatedPets to leverage potential shared data
+        // The initial data load is handled by the onPageChanged effect.
+        // Pet of the Day is loaded within fetchPaginatedPets.
     }
 
     async loadPetOfTheDay(preloadedData?: { totalCount: number, pets: Pet[] }) {
@@ -59,20 +94,18 @@ export class PetListComponent implements OnInit {
                 this.petsService.getPetOfTheDay(this.paginationService.getPageSize(), preloadedData)
             );
         } catch (error) {
-            // Error is already handled by the service with toast
+            // Error is handled by the service, which shows a toast message.
             this.petOfTheDay = null;
         }
     }
 
     private areFiltersEmpty(filters: any, sort: any): boolean {
-        // Check if filters match default values
         const areFiltersDefault = !filters.name &&
             !filters.kind &&
             filters.weight === FILTER_CATEGORIES.WEIGHT.ALL &&
             filters.height === FILTER_CATEGORIES.HEIGHT.ALL &&
             filters.length === FILTER_CATEGORIES.LENGTH.ALL;
 
-        // Check if sort is default
         const isSortDefault = sort.sortBy === APP_CONSTANTS.DEFAULT_SORT.SORT_BY &&
             sort.sortOrder === APP_CONSTANTS.DEFAULT_SORT.SORT_ORDER;
 
@@ -82,16 +115,18 @@ export class PetListComponent implements OnInit {
     async fetchPaginatedPets() {
         const page = this.paginationService.currentPage();
 
-        // If we already have this page in cache, use it
-        // Use untracked to prevent effect re-execution when cache updates
+        // Use cached page if available to avoid unnecessary API calls
         const cachedPage = untracked(() => this.paginationService.getPage(page));
         if (cachedPage) {
             this.pets = cachedPage;
+            this.isLoading = false;
+            if (!this.petOfTheDay) {
+                void this.loadPetOfTheDay();
+            }
             return;
         }
 
-        // Guard against concurrent fetches
-        // Use untracked to prevent effect re-execution when fetching state updates
+        // Prevent concurrent fetches
         if (untracked(() => this.paginationService.isFetchingPage())) {
             return;
         }
@@ -111,35 +146,30 @@ export class PetListComponent implements OnInit {
                 )
             );
 
-            // Update total pets from header/response
             this.paginationService.setTotalItems(totalCount);
 
-            // Try to load Pet of the Day if not loaded yet
+            // Load Pet of the Day if it hasn't been loaded yet
             if (!this.petOfTheDay) {
-                // If filters are empty and we are on page 1, we can reuse this data
                 if (page === 1 && this.areFiltersEmpty(filters, sort)) {
-                    this.loadPetOfTheDay({ totalCount, pets });
+                    // Reuse data if on the first page with no filters
+                    void this.loadPetOfTheDay({ totalCount, pets });
                 } else {
-                    // Otherwise we need to fetch it separately
-                    this.loadPetOfTheDay();
+                    void this.loadPetOfTheDay();
                 }
             }
 
-            // If we got no pets and we are trying to go to a next page, stay on current page and show toast
+            // If the current page has no pets (e.g., beyond the last page), go back one page
             if (pets.length === 0 && page > 1) {
                 this.paginationService.setCurrentPage(page - 1);
                 this.toastService.info('noMorePets');
                 return;
             }
 
-            // Store pets in cache by page number
             this.paginationService.cachePage(page, pets);
             this.pets = pets;
         } catch (error) {
-            // Error is already handled by the service with toast
-            // Keep current pets if available
-            const hasCache = this.paginationService.getPage(1) !== undefined;
-            if (!hasCache) {
+            // Errors are handled by the service. If no pets are cached, show an empty list.
+            if (!this.paginationService.getPage(1)) {
                 this.pets = [];
             }
         } finally {
@@ -147,8 +177,6 @@ export class PetListComponent implements OnInit {
             this.paginationService.setFetching(false);
         }
     }
-
-
 
     get paginatedPets(): Pet[] {
         return this.pets;
@@ -160,8 +188,7 @@ export class PetListComponent implements OnInit {
     }
 
     nextPage() {
-        const moved = this.paginationService.nextPage();
-        if (!moved) {
+        if (!this.paginationService.nextPage()) {
             this.toastService.info('noMorePets');
         }
     }
@@ -171,6 +198,6 @@ export class PetListComponent implements OnInit {
     }
 
     goToDetail(id: number) {
-        this.router.navigate(['/pets', id]);
+        void this.router.navigate(['/pets', id]);
     }
 }

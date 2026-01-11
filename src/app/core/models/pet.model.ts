@@ -27,4 +27,7 @@ export interface Pet {
 
   /** Number of lives (Cats) */
   number_of_lives?: number;
+
+  /** Health status (calculated) */
+  health?: string;
 }

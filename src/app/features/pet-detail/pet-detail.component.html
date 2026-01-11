@@ -42,9 +42,9 @@
             <div class="separator"></div>
 
             <div class="info-item">
-                <div class="icon">🐾</div>
+                <div class="icon">{{ getHealthHeart() }}</div>
                 <div class="label">{{ 'health' | translate }}</div>
-                <div class="value">{{ pet.kind | translate }}</div>
+                <div class="value">{{ this.pet.health ?? '' | translate }}</div>
             </div>
         </aside>
 

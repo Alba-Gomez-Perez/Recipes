@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Pet } from "../models/pet.model";
 import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from "../constants";
 import { PetFilters, PetSort } from './filter.service';
@@ -46,32 +46,32 @@ function buildQueryParams(params: GetPetsParams): HttpParams {
 
         // Weight filter
         if (filters.weight === FILTER_CATEGORIES.WEIGHT.SMALL) {
-            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LT, FILTER_THRESHOLDS.WEIGHT.SMALL_MAX.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LTE, FILTER_THRESHOLDS.WEIGHT.SMALL_MAX.toString());
         } else if (filters.weight === FILTER_CATEGORIES.WEIGHT.MEDIUM) {
             httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GTE, FILTER_THRESHOLDS.WEIGHT.MEDIUM_MIN.toString());
             httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_LTE, FILTER_THRESHOLDS.WEIGHT.MEDIUM_MAX.toString());
         } else if (filters.weight === FILTER_CATEGORIES.WEIGHT.LARGE) {
-            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GT, FILTER_THRESHOLDS.WEIGHT.LARGE_MIN.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.WEIGHT_GTE, FILTER_THRESHOLDS.WEIGHT.LARGE_MIN.toString());
         }
 
         // Height filter
         if (filters.height === FILTER_CATEGORIES.HEIGHT.SHORT) {
-            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LT, FILTER_THRESHOLDS.HEIGHT.SHORT_MAX.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LTE, FILTER_THRESHOLDS.HEIGHT.SHORT_MAX.toString());
         } else if (filters.height === FILTER_CATEGORIES.HEIGHT.AVERAGE) {
             httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GTE, FILTER_THRESHOLDS.HEIGHT.AVERAGE_MIN.toString());
             httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_LTE, FILTER_THRESHOLDS.HEIGHT.AVERAGE_MAX.toString());
         } else if (filters.height === FILTER_CATEGORIES.HEIGHT.TALL) {
-            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GT, FILTER_THRESHOLDS.HEIGHT.TALL_MIN.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.HEIGHT_GTE, FILTER_THRESHOLDS.HEIGHT.TALL_MIN.toString());
         }
 
         // Length filter
         if (filters.length === FILTER_CATEGORIES.LENGTH.SHORT) {
-            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_LT, FILTER_THRESHOLDS.LENGTH.SHORT_MAX.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_LTE, FILTER_THRESHOLDS.LENGTH.SHORT_MAX.toString());
         } else if (filters.length === FILTER_CATEGORIES.LENGTH.AVERAGE) {
             httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_GTE, FILTER_THRESHOLDS.LENGTH.AVERAGE_MIN.toString());
             httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_LTE, FILTER_THRESHOLDS.LENGTH.AVERAGE_MAX.toString());
         } else if (filters.length === FILTER_CATEGORIES.LENGTH.LONG) {
-            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_GT, FILTER_THRESHOLDS.LENGTH.LONG_MIN.toString());
+            httpParams = httpParams.append(API_CONSTANTS.QUERY_PARAMS.LENGTH_GTE, FILTER_THRESHOLDS.LENGTH.LONG_MIN.toString());
         }
     }
 
@@ -156,7 +156,7 @@ export class PetsService {
         const month = today.getMonth() + 1;
         const day = today.getDate();
         const dateSeed = year * 10000 + month * 100 + day;
-
+        
         return dateSeed % totalCount;
     }
 
@@ -171,10 +171,43 @@ export class PetsService {
      * @param preloadedData - Optional data from a previous search (must be page 1 and unfiltered)
      * @returns Observable with the pet of the day or null
      */
-    getPetOfTheDay(pageSize: number, preloadedData?: { totalCount: number, pets: Pet[] }): Observable<Pet | null> {
-        const source$ = preloadedData
-            ? of(preloadedData)
-            : this.getPets(1, pageSize);
+    getPetOfTheDay(pageSize: number, _preloadedData?: { totalCount: number, pets: Pet[] }): Observable<Pet | null> {
+        const STORAGE_KEY = 'fever_pet_of_day';
+        const today = new Date().toDateString();
+        let storedPet: Pet | null = null;
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed.date === today && parsed.pet && parsed.pet.name) {
+                    storedPet = parsed.pet;
+                }
+            }
+        } catch (e) {
+            console.error('Error reading local storage', e);
+        }
+
+        if (storedPet) {
+            // Try to fetch fresh data for this ID to ensure we have the latest text/details
+            return this.getPetById(storedPet.id).pipe(
+                map(freshPet => {
+                    if (freshPet) {
+                        // Update storage with fresh data
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                            date: today,
+                            pet: freshPet
+                        }));
+                        return freshPet;
+                    }
+                    // Fallback to stored pet if fetch fails (e.g. network error)
+                    return storedPet!;
+                })
+            );
+        }
+
+        // Always fetch fresh, unfiltered data to ensure the Pet of the Day remains constant regardless of current filters or sort
+        const source$ = this.getPets(1, pageSize);
 
         return source$.pipe(
             switchMap(({ pets: firstPagePets, totalCount }) => {
@@ -203,6 +236,14 @@ export class PetsService {
                         return firstPagePets[0] || null;
                     })
                 );
+            }),
+            tap(pet => {
+                if (pet) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        date: today,
+                        pet
+                    }));
+                }
             }),
             catchError(() => of(null))
         );
@@ -269,3 +310,7 @@ export class PetsService {
         return of(result);
     }
 }
+
+
+// https://my-json-server.typicode.com/Feverup/fever_pets_data/pets?_page=1&_limit=6&weight_gte=15000&_sort=name&_order=asc&_t=1768095835556
+// https://my-json-server.typicode.com/Feverup/fever_pets_data/pets?_page=1&_limit=6&weight_gt=15000&_sort=weight&_order=desc&_t=1768096280688

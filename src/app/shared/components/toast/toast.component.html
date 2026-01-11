@@ -1,0 +1,7 @@
+@if (toastService.toast()) {
+    <div class="toast-notification" [class]="'toast-' + toastService.toast()!.type">
+        <span class="toast-icon">{{ getIcon() }}</span>
+        <span class="toast-message">{{ toastService.toast()!.message | translate }}</span>
+        <button class="toast-close" (click)="toastService.hide()" aria-label="Close">×</button>
+    </div>
+}

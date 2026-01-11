@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { firstValueFrom } from 'rxjs';
 import { PetsService } from "../../core/services/pets.service";
@@ -9,6 +9,7 @@ import { GramsToKgPipe } from '../../core/pipes/grams-to-kg.pipe';
 import { RouterModule } from '@angular/router';
 import { APP_CONSTANTS } from '../../core/constants';
 import { ToastService } from '../../core/services/toast.service';
+import { PetHealthService } from "../../core/services/pet-health.service";
 
 @Component({
     selector: 'app-pet-detail',
@@ -21,6 +22,8 @@ export class PetDetailComponent implements OnInit {
     pet: Pet | undefined;
     readonly defaultPetImage: string = APP_CONSTANTS.IMAGES.DEFAULT_PET;
     private route = inject(ActivatedRoute);
+    private router = inject(Router);
+    private healthService = inject(PetHealthService);
     private petsService = inject(PetsService);
     private toastService = inject(ToastService);
 
@@ -37,9 +40,10 @@ export class PetDetailComponent implements OnInit {
         try {
             this.pet = await firstValueFrom(this.petsService.getPetById(id));
             if (!this.pet) {
-                // Pet not found - error already shown by service
-                // Could navigate back or show additional UI here
+                this.router.navigate(['/']);
+                return;
             }
+            this.getHealthStatus();
         } catch (error) {
             // Error is already handled by the service with toast
             this.pet = undefined;
@@ -49,5 +53,21 @@ export class PetDetailComponent implements OnInit {
     onImageError(event: Event): void {
         const img = event.target as HTMLImageElement;
         img.src = this.defaultPetImage;
+    }
+
+    getHealthStatus(): string {
+        if (!this.pet) return ''
+        if (!this.pet.health) {
+            this.pet.health = this.healthService.getPetHealth(this.pet);
+        }
+        return this.pet.health;
+    }
+
+    getHealthHeart(): string {
+        switch (this.pet?.health) {
+            case 'unhealthy': return '❤️';
+            case 'very healthy': return '💚';
+            default: return '💛';
+        }
     }
 }
