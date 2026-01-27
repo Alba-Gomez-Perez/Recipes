@@ -1,8 +1,8 @@
-import {Routes} from '@angular/router';
-import {PetListComponent} from './features/pet-list/pet-list.component';
-import {PetDetailComponent} from './features/pet-detail/pet-detail.component';
+import { Routes } from '@angular/router';
+import { RecipeListComponent } from './features/recipe-list/recipe-list.component';
+import { RecipeDetailComponent } from './features/recipe-detail/recipe-detail.component';
 
 export const appRoutes: Routes = [
-    { path: '', component: PetListComponent },
-    { path: 'pets/:id', component: PetDetailComponent }
+    { path: '', component: RecipeListComponent },
+    { path: 'recipes/:id', component: RecipeDetailComponent }
 ];

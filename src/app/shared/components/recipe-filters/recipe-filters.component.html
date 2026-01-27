@@ -1,0 +1,17 @@
+<div class="filters">
+    <div class="search-container">
+        <input type="text" [placeholder]="'searchPlaceholder' | translate" class="search-input"
+            (input)="updateName($event)" [value]="filterService.filters().name">
+    </div>
+    <div class="categories-container">
+        @for (cat of categories; track cat) {
+        <div class="category-item" [class.active]="filterService.filters().category === cat"
+            (click)="toggleCategory(cat)">
+            <div class="category-circle" [ngClass]="cat">
+                <img [src]="'assets/' + (cat === 'doughs' ? 'dough' : cat) + '.png'" [alt]="cat">
+            </div>
+            <span class="category-label">{{ cat | translate | uppercase }}</span>
+        </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="recipe-card">
+    <div class="card-image">
+        <img [src]="recipe.photo_url || defaultRecipeImage" [alt]="recipe.name" (error)="onImageError($event)">
+    </div>
+    <div class="card-content">
+        <h3>{{ recipe.name }}</h3>
+        <div class="card-info">
+            <p><span class="icon">{{ getCategoryIcon() }}</span> {{ recipe.category | translate }}</p>
+            <p><span class="icon">⏱️</span> {{ recipe.prepTime + recipe.cookTime | minutesToTime }}</p>
+            <p><span class="icon">🍽️</span> {{ recipe.servings }} {{ 'servings' | translate }}</p>
+            <p><span class="icon">🔥</span> {{ recipe.calories }} kcal</p>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+@if (recipe) {
+<div class="recipe-detail-container">
+    <div class="header">
+        <a routerLink="/" class="back-link">
+            <span class="back-arrow">←</span>
+        </a>
+        <h1>{{ recipe.name | uppercase }}</h1>
+    </div>
+
+    <div class="content-grid">
+        <aside class="sidebar">
+            <div class="info-item">
+                <div class="icon">{{ getCategoryIcon() }}</div>
+                <div class="label">{{ 'categoryLabel' | translate }}</div>
+                <div class="value">{{ recipe.category | translate }}</div>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="info-item">
+                <div class="icon">🍽️</div>
+                <div class="label">{{ 'servingsLabel' | translate }}</div>
+                <div class="value">{{ recipe.servings }}</div>
+            </div>
+
+
+            <div class="separator"></div>
+
+            @if (recipe.ingredients?.length) {
+            <div class="info-item full-width">
+                <div class="icon">🥗</div>
+                <div class="label">{{ 'ingredientsLabel' | translate }}</div>
+                <ul class="ingredients-list">
+                    @for (ingredient of recipe.ingredients; track ingredient) {
+                    <li>{{ ingredient }}</li>
+                    }
+                </ul>
+            </div>
+            }
+        </aside>
+
+        <main class="main-image">
+            <div class="image-wrapper">
+                <img [src]="recipe.photo_url || defaultRecipeImage" [alt]="recipe.name" (error)="onImageError($event)">
+            </div>
+            <p class="quote">{{ recipe.instructions }}</p>
+        </main>
+    </div>
+</div>
+} @else {
+<div class="loading">
+    <img src="/assets/loading.png" [alt]="'loading' | translate" class="loading-img">
+</div>
+}

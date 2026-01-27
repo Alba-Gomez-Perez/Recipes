@@ -1,0 +1,98 @@
+<div class="modal-overlay" (click)="onClose()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+
+        <!-- Left: Illustration Panel -->
+        <div class="illustration-panel">
+            <div class="illustration-content">
+                <img src="assets/recipe_modal_illustration.png" alt="Cook illustration" class="side-img">
+            </div>
+        </div>
+
+        <!-- Right: Form Panel -->
+        <div class="form-panel">
+            <div class="panel-header">
+                <div class="title-group">
+                    <h2>{{ 'addNewRecipe' | translate }}!</h2>
+                </div>
+                <button type="button" class="close-btn" (click)="onClose()">×</button>
+            </div>
+
+            <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="recipe-form">
+                <div class="form-body-content">
+
+                    <!-- Recipe Name -->
+                    <div class="form-group">
+                        <label>{{ 'recipeNameLabel' | translate | uppercase }}</label>
+                        <div class="control-wrapper">
+                            <input type="text" formControlName="name"
+                                [placeholder]="'recipeNamePlaceholder' | translate">
+                            <span class="control-icon">📝</span>
+                        </div>
+                    </div>
+
+                    <!-- Photo URL -->
+                    <div class="form-group">
+                        <label>{{ 'photoUrlLabel' | translate | uppercase }}</label>
+                        <div class="control-wrapper">
+                            <input type="text" formControlName="photo_url" placeholder="https://...">
+                            <span class="control-icon">🖼️</span>
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label>{{ 'categoryLabel' | translate | uppercase }}</label>
+                        <div class="control-wrapper">
+                            <select formControlName="category">
+                                @for (cat of categories; track cat) {
+                                <option [value]="cat">{{ cat | translate }}</option>
+                                }
+                            </select>
+                            <span class="control-icon">🍽️</span>
+                        </div>
+                    </div>
+
+                    <!-- Ingredients -->
+                    <div class="form-group">
+                        <label>{{ 'ingredientsLabel' | translate | uppercase }} ({{ 'onePerLine' | translate | uppercase
+                            }})</label>
+                        <div class="control-wrapper no-icon">
+                            <textarea formControlName="ingredients" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Instructions (Step by Step) -->
+                    <div class="instructions-section" formArrayName="instructions">
+                        <label class="section-label">{{ 'instructionsLabel' | translate | uppercase }}</label>
+
+                        <div class="steps-list">
+                            @for (step of instructions.controls; track $index) {
+                            <div class="form-group step-group">
+                                <div class="step-header">
+                                    <label>PASO {{ $index + 1 }}</label>
+                                    @if (instructions.length > 1) {
+                                    <button type="button" class="remove-step-btn"
+                                        (click)="removeStep($index)">×</button>
+                                    }
+                                </div>
+                                <div class="control-wrapper no-icon">
+                                    <textarea [formControlName]="$index" rows="2"
+                                        (input)="onStepInput($index)"></textarea>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-footer">
+                    <button type="button" class="btn-cancel" (click)="onClose()">{{ 'cancelBtn' | translate }}</button>
+                    <button type="submit" class="btn-submit" [disabled]="recipeForm.invalid">
+                        {{ 'saveBtn' | translate }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

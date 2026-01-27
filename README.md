@@ -1,64 +1,83 @@
-# Frontend Code Challenge
-# Fever Pets 🐾
+# Fever Recipes 🍳
 
-Fever's Code Challenge for Front End job applicants
-Welcome to **Fever Pets**. This project is a Single Page Application (SPA) built with Angular, allowing users to explore a pets catalog, filter them by various criteria, and view detailed information about their health and characteristics
+A modern, elegant recipe catalog application built with Angular, featuring a premium "sticker" aesthetic with custom illustrations and a soft color palette.
 
-## 🚀 Main features
+## 🚀 Main Features
 
-*   **List pets view**: Display of pets with optimized pagination.
-*   **Filters**:
-    *   **Searching by name**: Implementada con *debounce* para optimizar las llamadas a la API.
-    *   **Type**: Filtering based on pet type (Dog or cat).
-    *   **Physical attributes**: Filter by weight, height and length.
-*   **Sorting**: Sorting by name and physical attributes.
-*   **Pet detail view**: All information of the pet.
-*   **Health section**: Show health status (❤️, 💛, 💚).
-*   **Favourite pet**: Pet of the day.
+- **Recipe Catalog**: Browse recipes with optimized pagination and smooth navigation
+- **Advanced Filtering**:
+  - **Search by name**: Real-time search with debounce optimization
+  - **Category filters**: Visual category selection with custom hand-drawn icons (Dessert, Fish, Meat, Legumes, Rice, Vegetables, Doughs, Pasta, Others)
+- **Recipe Details**: Comprehensive recipe information including ingredients, step-by-step instructions, prep time, and nutritional data
+- **Recipe of the Day**: Daily featured recipe with elegant presentation
+- **Add New Recipes**: Premium modal interface with step-by-step instruction builder
+- **Internationalization (i18n)**: Seamless switching between English and Spanish
 
+## 🎨 Design Highlights
+
+- **Premium Aesthetic**: Soft cream and pink color palette (#f5f0e6, #fef3f3, #d78b8e)
+- **Custom Category Icons**: Hand-drawn style illustrations with rich, dark circular backgrounds
+- **Floating Action Button**: Wavy "sticker" design with rotating circular text animation
+- **Step-by-Step Instructions**: Dynamic form with automatic step addition
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
 ## 🛠️ Technology Stack
 
-*   **Framework**: Angular 20 (Standalone Components).
-*   **Reactivity**: Angular Signals.
-*   **Style**: SCSS.
-*   **Testing**: Jasmine & Karma.
+- **Framework**: Angular 20 (Standalone Components)
+- **Reactivity**: Angular Signals for efficient state management
+- **Styling**: SCSS with custom design system
+- **Backend**: JSON Server for API simulation
+- **Testing**: Jasmine & Karma with Stryker mutation testing
+- **Internationalization**: ngx-translate
 
-## ⭐ Highlights
+## ⭐ Technical Highlights
 
-*   **Stryker**: A [tool](https://stryker-mutator.io/) that helps verify the quality of tests by making small changes to the code and checking if the tests catch them.
-*   **Cache**: Angular's caching mechanism for HTTP requests.
-*   **Pagination**: Optimized pagination for better performance.
-*   **Pet of the day**: Generated a pet of the day using a random number based on the current date.
-*   **Internacionalización (i18n)**: Switch between English and Spanish.
-
-
-[![Watch the demo] (https://www.loom.com/share/7437f8f800b2465b89a0ffb5b1122fdc)
-
+- **Signal-based Architecture**: Reactive data flow using Angular Signals
+- **Smart Caching**: Pagination service with intelligent cache management
+- **Automatic Refresh**: Recipe list updates automatically when new recipes are created
+- **Mutation Testing**: Stryker integration for test quality verification
+- **Recipe of the Day Algorithm**: Deterministic daily selection based on date seed
 
 ## ⚙️ Installation & Running the Project
 
 1. **Clone the repository**
-2. **Install dependencies**
 
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. **Run the project**
+3. **Start the API server**
+```bash
+npm run start:api
+```
 
+4. **Run the development server**
 ```bash
 ng serve
 ```
 
-4. **Run the tests**
-
+5. **Run tests**
 ```bash
 ng test
 ```
 
-5. **Run Stryker**
+6. **Run mutation tests with Stryker**
 ```bash
 npm run test:stryker
 ```
 
+## 📁 Project Structure
+
+- `/src/app/core` - Core services, models, and constants
+- `/src/app/features` - Feature modules (recipe-list, recipe-detail)
+- `/src/app/shared` - Shared components (filters, cards, modals)
+- `/public/assets` - Static assets including custom category icons
+
+## 🌐 Available Scripts
+
+- `npm start` - Start development server
+- `npm run start:api` - Start JSON Server API
+- `npm test` - Run unit tests
+- `npm run test:stryker` - Run mutation testing
+- `npm run build` - Build for production

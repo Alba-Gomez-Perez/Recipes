@@ -1,0 +1,84 @@
+.fab-container {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    width: 120px;
+    height: 120px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    outline: none;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &:hover {
+        transform: scale(1.1) rotate(5deg);
+
+        .fab-sticker {
+            filter: drop-shadow(0 15px 30px rgba(215, 139, 142, 0.4));
+        }
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+
+    @media (max-width: 600px) {
+        bottom: 20px;
+        right: 20px;
+        width: 100px;
+        height: 100px;
+    }
+}
+
+.fab-sticker {
+    width: 100%;
+    height: 100%;
+    transition: filter 0.3s;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+}
+
+.fab-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+
+    .wavy-shape {
+        fill: #fde2e4; // Light pink background
+        stroke: none;
+    }
+
+    .star-icon {
+        fill: #ffffff;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
+    }
+
+    .rotating-text {
+        font-family: 'Outfit', sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        fill: #d78b8e; // Dark coral/pink for text
+        letter-spacing: 2.5px;
+        animation: rotate 15s linear infinite;
+        transform-origin: center;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+// Ensure the text rotates around the center of the SVG
+.rotating-text {
+    dominant-baseline: middle;
+}

@@ -3,14 +3,16 @@
  */
 export const APP_CONSTANTS = {
   /** Default page size for pagination */
-  DEFAULT_PAGE_SIZE: 6,
+  DEFAULT_PAGE_SIZE: 12,
 
   /** Asset image paths */
   IMAGES: {
-    DEFAULT_PET: '/assets/default.png',
-    DEFAULT_PET_RELATIVE: 'assets/default.png',
+    DEFAULT_RECIPE: '/assets/default.png',
+    DEFAULT_RECIPE_RELATIVE: 'assets/default.png',
     LOADING: 'assets/loading.png',
-    NO_FOUND: 'assets/no-found.png',
+    NO_FOUND: '/assets/no-found.png',
+    LOGO: '/assets/logo.png',
+    LOGO_DARK: '/assets/logo-dark.png',
   },
 
   /** Toast display duration in milliseconds */

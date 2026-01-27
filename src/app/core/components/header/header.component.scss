@@ -15,15 +15,18 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        
+
         a.logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            letter-spacing: -0.5px;
             text-decoration: none;
             cursor: pointer;
-            white-space: nowrap;
+            display: flex;
+            align-items: center;
+
+            .logo-img {
+                height: 40px;
+                width: auto;
+                object-fit: contain;
+            }
         }
     }
 
@@ -58,6 +61,31 @@
             background: rgba(0, 0, 0, 0.05);
             padding: 0.25rem;
             border-radius: 2rem;
+
+            .add-recipe-btn {
+                background: #ff3b3f;
+                border: none;
+                font-size: 1.25rem;
+                padding: 0.4rem;
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                box-shadow: 0 2px 8px rgba(255, 59, 63, 0.3);
+                margin-right: 0.5rem;
+
+                &:hover {
+                    transform: scale(1.1) rotate(90deg);
+                    background: #e63539;
+                }
+
+                &:active {
+                    transform: scale(0.95);
+                }
+            }
 
             .lang-btn {
                 background: none;
@@ -205,7 +233,7 @@
     }
 
     &.detail-view {
-        background-color: #2c4850;
+        background-color: #d78b8e; // Coral pink
 
         .header-left a.logo {
             color: white;
@@ -236,7 +264,7 @@
 
         @media (max-width: 1550px) {
             .header-center {
-                background: #2c4850;
+                background: #d78b8e;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
         }

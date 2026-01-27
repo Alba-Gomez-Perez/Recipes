@@ -1,11 +1,8 @@
 <header class="fever-header" [class.detail-view]="isDetailPage" [class.menu-open]="isMobileMenuOpen">
-    <div class="header-left">
-        <a routerLink="/" class="logo">Fever Pets</a>
-    </div>
 
     <div class="header-center" [class.mobile-visible]="isMobileMenuOpen">
         @if (showFilters) {
-        <app-pet-filters></app-pet-filters>
+        <app-recipe-filters></app-recipe-filters>
         }
     </div>
 
@@ -28,7 +25,13 @@
         }
     </div>
 
+    @if (showCreateModal) {
+    <app-recipe-create-modal (close)="closeCreateModal()" (recipeCreated)="onRecipeCreated()"></app-recipe-create-modal>
+    }
+
     @if (isMobileMenuOpen) {
     <div class="mobile-backdrop" (click)="toggleMobileMenu()"></div>
     }
+    <!-- Floating Add Button Overlay -->
+    <app-floating-add-button (clicked)="openCreateModal()"></app-floating-add-button>
 </header>

@@ -1,0 +1,27 @@
+<button class="fab-container" (click)="onClick()" aria-label="Add new recipe">
+    <div class="fab-sticker">
+        <!-- SVG for the wavy/scalloped background and rotating text -->
+        <svg viewBox="0 0 200 200" class="fab-svg">
+            <defs>
+                <!-- Path for the circular text -->
+                <path id="textPath" d="M 100, 100 m -70, 0 a 70,70 0 1,1 140,0 a 70,70 0 1,1 -140,0" />
+            </defs>
+
+            <!-- Wavy shape (created with CSS filter or SVG path, using path for precision) -->
+            <path class="wavy-shape"
+                d="M100,20 C108,20 114,30 122,32 C130,34 140,28 147,33 C154,38 152,50 157,57 C162,64 174,68 174,77 C174,86 164,92 162,100 C160,108 170,118 165,125 C160,132 148,131 142,137 C136,143 135,155 128,158 C121,161 112,153 104,153 C96,153 87,161 80,158 C73,155 72,143 66,137 C60,131 48,132 43,125 C38,118 48,108 46,100 C44,92 34,86 34,77 C34,68 46,64 51,57 C56,50 54,38 61,33 C68,28 78,34 86,32 C94,30 100,20 100,20 Z"
+                transform="scale(1.1) translate(-10 -10)" />
+
+            <!-- Centered Star -->
+            <path class="star-icon" d="M100,75 L106,94 L125,100 L106,106 L100,125 L104,106 L85,100 L104,94 Z" />
+
+            <!-- Rotating Text -->
+            <text class="rotating-text">
+                <textPath xlink:href="#textPath" startOffset="0%">
+                    {{ 'timeToCook' | translate | uppercase }} • ADD NEW • {{ 'timeToCook' | translate | uppercase }} •
+                    ADD NEW •
+                </textPath>
+            </text>
+        </svg>
+    </div>
+</button>

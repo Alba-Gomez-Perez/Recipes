@@ -2,13 +2,13 @@
  * API-related constants
  */
 export const API_CONSTANTS = {
-  /** Base URL for the pets API */
-  BASE_URL: 'https://my-json-server.typicode.com/Feverup/fever_pets_data/pets',
+  /** Base URL for the recipes API */
+  BASE_URL: 'http://localhost:3000/recipes',
 
   /** Error messages */
   ERROR_MESSAGES: {
-    FETCH_PETS: 'Error al obtener los datos',
-    FETCH_PET_BY_ID: 'Error al obtener el pet',
+    FETCH_RECIPES: 'Error al obtener las recetas',
+    FETCH_RECIPE_BY_ID: 'Error al obtener la receta',
   },
 
   /** HTTP Headers */
@@ -23,12 +23,13 @@ export const API_CONSTANTS = {
     SORT: '_sort',
     ORDER: '_order',
     NAME_LIKE: 'name_like',
-    KIND: 'kind',
-    WEIGHT_GTE: 'weight_gte',
-    WEIGHT_LTE: 'weight_lte',
-    HEIGHT_GTE: 'height_gte',
-    HEIGHT_LTE: 'height_lte',
-    LENGTH_GTE: 'length_gte',
-    LENGTH_LTE: 'length_lte',
+    CATEGORY: 'category',
+    DIFFICULTY: 'difficulty',
+    PREP_TIME_GTE: 'prepTime_gte',
+    PREP_TIME_LTE: 'prepTime_lte',
+    COOK_TIME_GTE: 'cookTime_gte',
+    COOK_TIME_LTE: 'cookTime_lte',
+    CALORIES_GTE: 'calories_gte',
+    CALORIES_LTE: 'calories_lte',
   },
 } as const;

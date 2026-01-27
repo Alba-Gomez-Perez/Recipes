@@ -1,0 +1,46 @@
+<div class="recipe-list-container">
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1>{{ 'recipeOfTheDayTitle' | translate }}</h1>
+            <p>{{ 'recipeOfTheDaySubtitle' | translate }}</p>
+            <button (click)="goToDetail(recipeOfTheDay?.id!)" [attr.data-recipe-name]="recipeOfTheDay?.name">
+                {{ 'viewRecipeBtn' | translate }}
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        @if (isLoading) {
+        <div class="loading">
+            <img src="assets/loading.png" [alt]="'loadingAlt' | translate" class="loading-img">
+        </div>
+        } @else if (recipes.length > 0) {
+        <div class="recipe-grid">
+            @for (recipe of paginatedRecipes; track recipe.id) {
+            <app-recipe-card [recipe]="recipe" (click)="goToDetail(recipe.id)"></app-recipe-card>
+            }
+        </div>
+
+        <div class="pagination">
+            <button class="page-btn prev" (click)="prevPage()" [disabled]="!paginationService.canGoPrev()">
+                {{ 'prevBtn' | translate }}
+            </button>
+
+            @for (page of paginationService.pages(); track page) {
+            <button class="page-btn" [class.active]="paginationService.currentPage() === page" (click)="goToPage(page)">
+                {{ page }}
+            </button>
+            }
+
+            <button class="page-btn next" (click)="nextPage()" [disabled]="!paginationService.canGoNext()">
+                {{ 'nextBtn' | translate }}
+            </button>
+        </div>
+        } @else {
+        <div class="no-results">
+            <img src="assets/no-found.png" [alt]="'noRecipesFoundAlt' | translate">
+        </div>
+        }
+    </div>
+
+</div>

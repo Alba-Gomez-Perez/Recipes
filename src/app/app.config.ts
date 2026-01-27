@@ -1,13 +1,13 @@
-import {ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection} from '@angular/core';
-import {provideAnimations} from '@angular/platform-browser/animations';
-import {provideRouter} from '@angular/router';
-import {HttpClient, provideHttpClient} from '@angular/common/http';
-import {provideTranslateService, TranslateLoader} from '@ngx-translate/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter } from '@angular/router';
+import { HttpClient, provideHttpClient, withFetch } from '@angular/common/http';
+import { provideTranslateService, TranslateLoader } from '@ngx-translate/core';
 
-import {appRoutes} from './app.routes';
-import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
+import { appRoutes } from './app.routes';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 
 export class CustomTranslateLoader implements TranslateLoader {
   constructor(private http: HttpClient) { }
@@ -27,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideAnimations(),
     provideClientHydration(withEventReplay()),
-    provideHttpClient(),
+    provideHttpClient(withFetch()),
     provideTranslateService({
       loader: {
         provide: TranslateLoader,
