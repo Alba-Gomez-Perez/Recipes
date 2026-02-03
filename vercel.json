@@ -1,6 +1,10 @@
 {
     "rewrites": [
         {
+            "source": "/recipes(.*)",
+            "destination": "/api/server.js"
+        },
+        {
             "source": "/(.*)",
             "destination": "/index.html"
         }

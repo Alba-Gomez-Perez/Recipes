@@ -8,8 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:stryker": "stryker run",
-    "start:api": "json-server db.json",
-    "serve:ssr:alba-gomez-perez": "node dist/alba-gomez-perez/server/server.mjs"
+    "start:api": "json-server db.json"
   },
   "prettier": {
     "printWidth": 100,
@@ -31,12 +30,9 @@
     "@angular/core": "^20.3.16",
     "@angular/forms": "^20.3.16",
     "@angular/platform-browser": "^20.3.16",
-    "@angular/platform-server": "^20.3.16",
     "@angular/router": "^20.3.16",
-    "@angular/ssr": "^20.3.14",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
-    "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

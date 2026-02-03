@@ -5,7 +5,7 @@ import { HttpClient, provideHttpClient, withFetch } from '@angular/common/http';
 import { provideTranslateService, TranslateLoader } from '@ngx-translate/core';
 
 import { appRoutes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+
 
 import { Observable } from 'rxjs';
 
@@ -26,7 +26,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
     provideAnimations(),
-    provideClientHydration(withEventReplay()),
+
     provideHttpClient(withFetch()),
     provideTranslateService({
       loader: {
