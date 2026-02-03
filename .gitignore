@@ -16,8 +16,3 @@ out-tsc/
 coverage/
 .stryker-tmp/
 reports/
-
-# Environment
-.env
-.env.*
-!.env.example

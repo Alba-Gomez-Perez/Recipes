@@ -31,8 +31,10 @@ class RecipeQueryBuilder {
             return this;
         }
 
-        // Note: name filtering is done client-side to support ingredient search
-        // Only category is filtered server-side
+        if (filters.name) {
+            this.params = this.params.append(API_CONSTANTS.QUERY_PARAMS.NAME_LIKE, filters.name);
+        }
+
         if (filters.category) {
             this.params = this.params.append(API_CONSTANTS.QUERY_PARAMS.CATEGORY, filters.category);
         }
@@ -102,28 +104,12 @@ export class RecipesService {
                     recipes = data.data;
                 }
 
-                // Client-side filtering for ingredients (since JSON Server can't search in arrays)
-                if (filters?.name) {
-                    const searchTerm = filters.name.toLowerCase();
-                    recipes = recipes.filter(recipe => {
-                        // Search in recipe name
-                        const nameMatch = recipe.name.toLowerCase().includes(searchTerm);
-
-                        // Search in ingredients array
-                        const ingredientMatch = recipe.ingredients?.some(ingredient =>
-                            ingredient.toLowerCase().includes(searchTerm)
-                        ) || false;
-
-                        return nameMatch || ingredientMatch;
-                    });
-                }
-
                 recipes.forEach(recipe => {
                     // Rating removed
                 });
 
-                // Update total count to reflect filtered results
-                const totalCount = recipes.length;
+                // json-server v1 returns 'items' in the body
+                const totalCount = data?.items ?? (totalCountHeader ? parseInt(totalCountHeader, 10) : recipes.length);
 
                 return {
                     recipes,
