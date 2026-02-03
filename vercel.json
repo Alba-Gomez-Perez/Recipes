@@ -1,8 +1,12 @@
 {
     "rewrites": [
         {
-            "source": "/recipes(.*)",
-            "destination": "/api/server.js"
+            "source": "/recipes",
+            "destination": "/db.json"
+        },
+        {
+            "source": "/recipes/(.*)",
+            "destination": "/db.json"
         },
         {
             "source": "/(.*)",
