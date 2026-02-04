@@ -1,0 +1,16 @@
+{
+    "rewrites": [
+        {
+            "source": "/recipes",
+            "destination": "/db.json"
+        },
+        {
+            "source": "/recipes/(.*)",
+            "destination": "/db.json"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}

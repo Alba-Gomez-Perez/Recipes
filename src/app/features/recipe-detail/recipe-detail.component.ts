@@ -11,7 +11,7 @@ import { APP_CONSTANTS } from '../../core/constants';
 @Component({
     selector: 'app-recipe-detail',
     standalone: true,
-    imports: [CommonModule, MinutesToTimePipe, RouterModule, TranslateModule],
+    imports: [CommonModule, RouterModule, TranslateModule],
     templateUrl: './recipe-detail.component.html',
     styleUrls: ['./recipe-detail.component.scss']
 })
