@@ -102,6 +102,27 @@ export class RecipesService {
                     recipes = data;
                 } else if (data?.data) {
                     recipes = data.data;
+                } else if (data?.recipes) {
+                    // Handle static db.json structure
+                    recipes = data.recipes;
+                }
+
+                // Client-side filtering
+                if (filters) {
+                    if (filters.name) {
+                        const searchTerm = filters.name.toLowerCase();
+                        recipes = recipes.filter(recipe => {
+                            const nameMatch = recipe.name.toLowerCase().includes(searchTerm);
+                            const ingredientMatch = recipe.ingredients?.some(ingredient =>
+                                ingredient.toLowerCase().includes(searchTerm)
+                            ) || false;
+                            return nameMatch || ingredientMatch;
+                        });
+                    }
+
+                    if (filters.category) {
+                        recipes = recipes.filter(recipe => recipe.category === filters.category);
+                    }
                 }
 
                 recipes.forEach(recipe => {
@@ -109,11 +130,25 @@ export class RecipesService {
                 });
 
                 // json-server v1 returns 'items' in the body
-                const totalCount = data?.items ?? (totalCountHeader ? parseInt(totalCountHeader, 10) : recipes.length);
+                let totalCount = data?.items ?? (totalCountHeader ? parseInt(totalCountHeader, 10) : recipes.length);
+                totalCount = isNaN(totalCount) ? recipes.length : totalCount;
+
+                // Client-side pagination (if the API didn't do it)
+                // Logic: Exists filters OR (pagination requested AND returned items > limit)
+                const serverIgnoredPagination = page !== undefined && limit !== undefined && recipes.length > limit;
+
+                if (serverIgnoredPagination) {
+                    // Update totalCount to reflect the full dataset size since we are paginating client-side
+                    totalCount = recipes.length;
+
+                    const startIndex = (page - 1) * limit;
+                    const endIndex = startIndex + limit;
+                    recipes = recipes.slice(startIndex, endIndex);
+                }
 
                 return {
                     recipes,
-                    totalCount: isNaN(totalCount) ? recipes.length : totalCount
+                    totalCount
                 };
             }),
             catchError((error: HttpErrorResponse) => {
@@ -209,12 +244,14 @@ export class RecipesService {
             return of(cachedRecipe);
         }
 
-        return this.http.get<Recipe>(`${this.apiUrl}/${id}`).pipe(
-            map(recipe => {
-                if (recipe) {
-
+        return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+            map(response => {
+                // If it returns the full db.json object (static deployment)
+                if (response && response.recipes && Array.isArray(response.recipes)) {
+                    return response.recipes.find((r: Recipe) => r.id == id);
                 }
-                return recipe;
+                // If it returns a single recipe (standard API)
+                return response;
             }),
             catchError((error: HttpErrorResponse) => {
                 console.error(`recipesService.getRecipeById:`, error);

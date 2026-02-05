@@ -1,9 +1,11 @@
+import { environment } from '../../../environments/environment';
+
 /**
  * API-related constants
  */
 export const API_CONSTANTS = {
   /** Base URL for the recipes API */
-  BASE_URL: 'http://localhost:3000/recipes',
+  BASE_URL: `${environment.apiUrl}/recipes`,
 
   /** Error messages */
   ERROR_MESSAGES: {
