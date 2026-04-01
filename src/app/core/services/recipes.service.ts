@@ -232,14 +232,14 @@ export class RecipesService {
      * @param id - The id of the recipe
      * @returns Observable with the recipe found, or undefined if not found
      */
-    getRecipeById(id: number): Observable<Recipe | undefined> {
+    getRecipeById(id: number | string): Observable<Recipe | undefined> {
         // Skip API calls during SSR
         if (!this.isBrowser) {
             return of(undefined);
         }
 
         // Check local cache first
-        const cachedRecipe = this.paginationService.findInCache(recipe => recipe.id === id);
+        const cachedRecipe = this.paginationService.findInCache(recipe => String(recipe.id) === String(id));
         if (cachedRecipe) {
             return of(cachedRecipe);
         }
@@ -248,7 +248,7 @@ export class RecipesService {
             map(response => {
                 // If it returns the full db.json object (static deployment)
                 if (response && response.recipes && Array.isArray(response.recipes)) {
-                    return response.recipes.find((r: Recipe) => r.id == id);
+                    return response.recipes.find((r: Recipe) => String(r.id) === String(id));
                 }
                 // If it returns a single recipe (standard API)
                 return response;

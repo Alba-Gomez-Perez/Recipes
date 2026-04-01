@@ -24,14 +24,16 @@ export class RecipeDetailComponent implements OnInit {
 
     ngOnInit() {
         this.route.params.subscribe(params => {
-            const id = +params['id'];
-            if (id) {
+            const idParam = params['id'];
+            if (idParam) {
+                // If it evaluates to a valid number implicitly, try parsing, otherwise keep as string 
+                const id = isNaN(Number(idParam)) ? idParam : Number(idParam);
                 void this.getRecipe(id);
             }
         });
     }
 
-    async getRecipe(id: number) {
+    async getRecipe(id: number | string) {
         try {
             this.recipe = await firstValueFrom(this.recipesService.getRecipeById(id));
             if (!this.recipe) {

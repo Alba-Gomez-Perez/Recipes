@@ -165,7 +165,7 @@ export class RecipeListComponent {
         this.paginationService.prevPage();
     }
 
-    goToDetail(id: number) {
+    goToDetail(id: string | number) {
         void this.router.navigate(['/recipes', id]);
     }
 }
