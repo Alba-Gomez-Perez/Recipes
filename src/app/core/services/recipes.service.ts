@@ -8,6 +8,7 @@ import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from "../constant
 import { RecipeFilters } from './filter.service';
 import { ToastService } from './toast.service';
 import { PaginationService } from './pagination.service';
+import {environment} from "../../../environments/environment";
 
 
 export interface GetRecipesResponse {
@@ -63,8 +64,8 @@ export class RecipesService {
     public readonly refreshSignal = signal<number>(0);
 
     private readonly platformId = inject(PLATFORM_ID);
-    private readonly apiUrl = API_CONSTANTS.BASE_URL;
 
+    private readonly apiUrl = API_CONSTANTS.BASE_URL;
     private get isBrowser(): boolean {
         return isPlatformBrowser(this.platformId);
     }
@@ -77,6 +78,7 @@ export class RecipesService {
      * @returns Observable with recipes and total count
      */
     getRecipes(page?: number, limit?: number, filters?: RecipeFilters): Observable<GetRecipesResponse> {
+        console.log('apiUrl', this.apiUrl, {envApiUrl: environment.apiUrl});
         // Skip API calls during SSR
         if (!this.isBrowser) {
             return of({ recipes: [], totalCount: 0 });
