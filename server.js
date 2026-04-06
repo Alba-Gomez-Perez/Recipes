@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -7,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const uri = "mongodb+srv://albagope_db_user:alba22gomez@albacluster.uwqlte5.mongodb.net/?appName=AlbaCluster";
+const uri = process.env.MONGO_URI;
 
 mongoose.connect(uri)
     .then(() => console.log("✅ Connected to MongoDB"))

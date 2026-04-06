@@ -17,3 +17,5 @@ coverage/
 .stryker-tmp/
 reports/
 .vercel
+
+.env
