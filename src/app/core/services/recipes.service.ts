@@ -78,7 +78,6 @@ export class RecipesService {
      * @returns Observable with recipes and total count
      */
     getRecipes(page?: number, limit?: number, filters?: RecipeFilters): Observable<GetRecipesResponse> {
-        console.log('apiUrl', this.apiUrl, {envApiUrl: environment.apiUrl});
         // Skip API calls during SSR
         if (!this.isBrowser) {
             return of({ recipes: [], totalCount: 0 });
