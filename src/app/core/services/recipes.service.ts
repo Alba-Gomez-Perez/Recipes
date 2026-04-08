@@ -8,6 +8,7 @@ import { API_CONSTANTS, FILTER_THRESHOLDS, FILTER_CATEGORIES } from "../constant
 import { RecipeFilters } from './filter.service';
 import { ToastService } from './toast.service';
 import { PaginationService } from './pagination.service';
+import {environment} from "../../../environments/environment";
 
 
 export interface GetRecipesResponse {
@@ -63,8 +64,8 @@ export class RecipesService {
     public readonly refreshSignal = signal<number>(0);
 
     private readonly platformId = inject(PLATFORM_ID);
-    private readonly apiUrl = API_CONSTANTS.BASE_URL;
 
+    private readonly apiUrl = API_CONSTANTS.BASE_URL;
     private get isBrowser(): boolean {
         return isPlatformBrowser(this.platformId);
     }
@@ -232,14 +233,14 @@ export class RecipesService {
      * @param id - The id of the recipe
      * @returns Observable with the recipe found, or undefined if not found
      */
-    getRecipeById(id: number): Observable<Recipe | undefined> {
+    getRecipeById(id: number | string): Observable<Recipe | undefined> {
         // Skip API calls during SSR
         if (!this.isBrowser) {
             return of(undefined);
         }
 
         // Check local cache first
-        const cachedRecipe = this.paginationService.findInCache(recipe => recipe.id === id);
+        const cachedRecipe = this.paginationService.findInCache(recipe => String(recipe.id) === String(id));
         if (cachedRecipe) {
             return of(cachedRecipe);
         }
@@ -248,7 +249,7 @@ export class RecipesService {
             map(response => {
                 // If it returns the full db.json object (static deployment)
                 if (response && response.recipes && Array.isArray(response.recipes)) {
-                    return response.recipes.find((r: Recipe) => r.id == id);
+                    return response.recipes.find((r: Recipe) => String(r.id) === String(id));
                 }
                 // If it returns a single recipe (standard API)
                 return response;

@@ -1,4 +1,4 @@
-# Fever Recipes 🍳
+# Recipes 🍳
 
 A modern, elegant recipe catalog application built with Angular, featuring a premium "sticker" aesthetic with custom illustrations and a soft color palette.
 
@@ -26,7 +26,7 @@ A modern, elegant recipe catalog application built with Angular, featuring a pre
 - **Framework**: Angular 20 (Standalone Components)
 - **Reactivity**: Angular Signals for efficient state management
 - **Styling**: SCSS with custom design system
-- **Backend**: JSON Server for API simulation
+- **Backend**: Vercel Serverless Functions with MongoDB
 - **Testing**: Jasmine & Karma with Stryker mutation testing
 - **Internationalization**: ngx-translate
 
@@ -38,6 +38,18 @@ A modern, elegant recipe catalog application built with Angular, featuring a pre
 - **Mutation Testing**: Stryker integration for test quality verification
 - **Recipe of the Day Algorithm**: Deterministic daily selection based on date seed
 
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root directory and add your MongoDB connection string:
+
+```bash
+MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/recipes
+```
+If you are running MongoDB locally:
+```bash
+MONGO_URI=mongodb://localhost:27017/recipes_db
+```
+
 ## ⚙️ Installation & Running the Project
 
 1. **Clone the repository**
@@ -47,14 +59,15 @@ A modern, elegant recipe catalog application built with Angular, featuring a pre
 npm install
 ```
 
-3. **Start the API server**
+3. **Install Vercel CLI (if not installed globally)**
 ```bash
-npm run start:api
+npm i -g vercel
 ```
 
-4. **Run the development server**
+4. **Run the development server locally with Vercel**
+This will start both the Angular frontend and the serverless functions.
 ```bash
-ng serve
+vercel dev
 ```
 
 5. **Run tests**
@@ -76,8 +89,9 @@ npm run test:stryker
 
 ## 🌐 Available Scripts
 
-- `npm start` - Start development server
-- `npm run start:api` - Start JSON Server API
+- `npm start` - Start development server (Frontend only)
+- `vercel dev` - Start local development with Serverless APIs (Requires Vercel CLI)
 - `npm test` - Run unit tests
 - `npm run test:stryker` - Run mutation testing
 - `npm run build` - Build for production
+

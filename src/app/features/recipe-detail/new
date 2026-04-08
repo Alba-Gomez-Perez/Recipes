@@ -1,0 +1,46 @@
+Operaciones tengan un portal donde puedan accedr al estado actual de la venta la moto.
+- Poder actualizar las tareas
+- Ver un histórico
+
+JSON
+idMoto
+marca
+yearMoto
+matricula
+modelo
+clientId
+clientName
+clientId
+operationName:
+status [
+    transaccion: boolean
+    currentState: completed
+    cambioTitularida:
+]
+historico [
+    start:
+    completed:
+]
+
+getMyProccess (id, 0)
+getMyProccess (id, )
+
+
+getInput (Buscador) --> 78
+
+Listado motos (Context) --> []
+    - originalMotoList
+    - filteredMotoList
+texto a filtrar
+
+filteredMotoList --> se pinta en la tabla
+
+pageSize
+currentPage
+filterSearch --> 78
+
+
+
+
+
+

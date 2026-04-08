@@ -3,7 +3,7 @@ export type RecipeDifficulty = 'easy' | 'medium' | 'hard';
 
 export interface Recipe {
   /** Recipe identity */
-  id: number;
+  id: number | string;
 
   /** Recipe name */
   name: string;

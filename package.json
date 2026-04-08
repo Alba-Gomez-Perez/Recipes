@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:stryker": "stryker run",
-    "start:api": "json-server db.json"
+    "start:api": "json-server"
   },
   "prettier": {
     "printWidth": 100,
@@ -33,6 +33,10 @@
     "@angular/router": "^20.3.16",
     "@ngx-translate/core": "^17.0.0",
     "@ngx-translate/http-loader": "^17.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.3.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -58,6 +62,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "nodemon": "^3.1.14",
     "ts-jest": "^29.4.6",
     "typescript": "~5.9.2"
   }
